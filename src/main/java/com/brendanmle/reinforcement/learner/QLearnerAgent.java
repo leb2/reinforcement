@@ -11,11 +11,9 @@ public class QLearnerAgent<
 
   public QLearnerAgent() {}
 
-  public QLearnerAgent(Environment<S, A> environment, StateActionFactory<S, A> saFactory) {
+  public QLearnerAgent(Environment<S, A> environment, ActionValueFunction q) {
     this();
-    q = new TableActionValueFunction<>(saFactory);
-    policy = new EpsilonGreedyPolicy<>(q, 1);
-    trainedPolicy = new EpsilonGreedyPolicy<>(q, 0);
+    setActionValueFunction(q);
     this.environment = environment;
   }
 
@@ -33,6 +31,12 @@ public class QLearnerAgent<
 
       q.backup(state, action, reward, statePrime);
     }
+  }
+
+  public void setActionValueFunction(ActionValueFunction q) {
+    this.q = q;
+    policy = new EpsilonGreedyPolicy<S, A>(q, 1);
+    trainedPolicy = new EpsilonGreedyPolicy<S, A>(q, 0);
   }
 
   public Policy<S, A> getGreedyPolicy() {

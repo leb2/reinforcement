@@ -1,7 +1,6 @@
 package com.brendanmle.reinforcement.tictactoe;
 
 import com.brendanmle.reinforcement.learner.TableActionValueFunction;
-import com.brendanmle.reinforcement.learner.EpsilonGreedyPolicy;
 import com.brendanmle.reinforcement.learner.QLearnerAgent;
 
 import java.util.Scanner;
@@ -10,14 +9,9 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
   private TicTacToeEnvironment ticTacToeEnvironment = new TicTacToeEnvironment();
 
   public TicTacToeAgent() {
-    super();
-    q = new TableActionValueFunction<>(new TicTacToeStateActionFactory());
-    environment = ticTacToeEnvironment;
-    policy = new EpsilonGreedyPolicy<>(q, 1);
-    trainedPolicy = new EpsilonGreedyPolicy<>(q, 0);
-
-    // Needs an opponent policy
-    TicTacToeStateActionFactory saf = new TicTacToeStateActionFactory();
+    super(new TicTacToeEnvironment(),
+            new TableActionValueFunction<>(new TicTacToeStateActionFactory()));
+    ticTacToeEnvironment = (TicTacToeEnvironment) environment;
 
     ticTacToeEnvironment.setOpponent(getGreedyPolicy());
   }

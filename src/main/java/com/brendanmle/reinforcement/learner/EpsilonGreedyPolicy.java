@@ -4,8 +4,7 @@ import java.util.*;
 
 public class EpsilonGreedyPolicy<
         S extends State<A>,
-        A extends Action,
-        SA extends StateAction<S, A>> implements Policy<S, A> {
+        A extends Action> implements Policy<S, A> {
 
   private ActionValueFunction<S, A> q;
   private double epsilon;
