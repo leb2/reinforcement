@@ -4,16 +4,19 @@ public class QLearnerAgent<
         S extends State<A>,
         A extends Action> {
 
-  private ActionValueFunction<S, A> q;
-  private Environment<S, A> environment;
-  private Policy<S, A> policy;
-  private Policy<S, A> trainedPolicy;
+  protected ActionValueFunction<S, A> q;
+  protected Environment<S, A> environment;
+  protected Policy<S, A> policy;
+  protected Policy<S, A> trainedPolicy;
+
+  public QLearnerAgent() {}
 
   public QLearnerAgent(Environment<S, A> environment, StateActionFactory<S, A> saFactory) {
-    this.environment = environment;
-    q = new ActionValueFunction<>(saFactory);
+    this();
+    q = new TableActionValueFunction<>(saFactory);
     policy = new EpsilonGreedyPolicy<>(q, 1);
     trainedPolicy = new EpsilonGreedyPolicy<>(q, 0);
+    this.environment = environment;
   }
 
   /**
