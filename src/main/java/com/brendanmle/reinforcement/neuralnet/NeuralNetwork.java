@@ -16,7 +16,7 @@ public class NeuralNetwork {
     layers[layers.length - 1] = new Layer(
         layerSizes[layers.length - 1], 
         layerSizes[layers.length], 
-        ActivationFunction.LINEAR);
+        ActivationFunction.TANH);
   }
   
   public double[] run(double[] input) {

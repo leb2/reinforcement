@@ -9,7 +9,7 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
 
   public TicTacToeAgent() {
     super(new TicTacToeEnvironment(),
-            new TableActionValueFunction<>(new TicTacToeStateActionFactory(), 0.1));
+            new NNActionValueFunction<>(new TicTacToeStateActionFactory(), 0.005));
     ticTacToeEnvironment = (TicTacToeEnvironment) environment;
 
     ticTacToeEnvironment.setOpponent(getGreedyPolicy());
@@ -68,6 +68,7 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
 
   public void playHuman() {
     Scanner scanner = new Scanner(System.in);
+    ticTacToeEnvironment.setOpponent(getGreedyPolicy());
 
     int i = 0;
     while (true) {
