@@ -32,6 +32,8 @@ public class EpsilonGreedyPolicy<
     } else {
       A maxAction = Collections.max(actions, Comparator.comparing(
               action -> q.getValue(state, action)));
+
+      // TODO: these are here for debugging
       double maxActionValue = q.getValue(state, maxAction);
       Map<A, Double> actionValues = new HashMap<>();
       for (int i = 0; i < actions.size(); i++) {

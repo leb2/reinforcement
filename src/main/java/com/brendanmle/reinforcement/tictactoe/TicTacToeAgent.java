@@ -1,7 +1,6 @@
 package com.brendanmle.reinforcement.tictactoe;
 
-import com.brendanmle.reinforcement.learner.TableActionValueFunction;
-import com.brendanmle.reinforcement.learner.QLearnerAgent;
+import com.brendanmle.reinforcement.learner.*;
 
 import java.util.Scanner;
 
@@ -10,7 +9,7 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
 
   public TicTacToeAgent() {
     super(new TicTacToeEnvironment(),
-            new TableActionValueFunction<>(new TicTacToeStateActionFactory()));
+            new TableActionValueFunction<>(new TicTacToeStateActionFactory(), 0.1));
     ticTacToeEnvironment = (TicTacToeEnvironment) environment;
 
     ticTacToeEnvironment.setOpponent(getGreedyPolicy());
@@ -18,8 +17,11 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
 
   public void train(int numIterations) {
     for (int i = 0; i < numIterations; i++) {
-      if (i % 1000 == 0) {
+      if (i % 5000 == 0) {
         System.out.println(i);
+      }
+      if (i % 20000 == 0) {
+        System.out.printf("Average Reward: %f\n", test(getGreedyPolicy(), 4000));
       }
       environment.setState(TicTacToeEnvironment.emptyState());
 
@@ -36,11 +38,47 @@ public class TicTacToeAgent extends QLearnerAgent<TicTacToeState, TicTacToeActio
     }
   }
 
-  public void play() {
+  public double test(Policy<TicTacToeState, TicTacToeAction> policy, int numIterations) {
+    return play(policy, new EpsilonGreedyPolicy<>(q, 1), numIterations);
+  }
+
+  private double play(Policy<TicTacToeState, TicTacToeAction> policy1,
+                    Policy<TicTacToeState, TicTacToeAction> policy2,
+                     double numIterations) {
+
+    double totalReward = 0;
+
+    ticTacToeEnvironment.setOpponent(policy2);
+    for (int i = 0; i < numIterations; i++) {
+      environment.setState(TicTacToeEnvironment.emptyState());
+
+      if (i % 2 == 0) {
+        TicTacToeAction action = policy2.chooseAction(environment.getState());
+        ticTacToeEnvironment.move(action.getRow(), action.getCol());
+      }
+
+      while (!environment.inTerminalState()) {
+        TicTacToeAction action = policy1.chooseAction(environment.getState());
+        totalReward += environment.performAction(action);
+      }
+    }
+
+    return totalReward / numIterations;
+  }
+
+  public void playHuman() {
     Scanner scanner = new Scanner(System.in);
 
+    int i = 0;
     while (true) {
+      i += 1;
       environment.setState(TicTacToeEnvironment.emptyState());
+
+      // Half of the time go second.
+      if (i % 2 == 0) {
+        TicTacToeAction action = getPolicy().chooseAction(environment.getState());
+        ticTacToeEnvironment.move(action.getRow(), action.getCol());
+      }
 
       while (!environment.inTerminalState()) {
         TicTacToeState state = environment.getState();

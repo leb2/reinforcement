@@ -9,4 +9,9 @@ public class TicTacToeStateActionFactory
   public TicTacToeStateAction create(TicTacToeState state, TicTacToeAction action) {
     return new TicTacToeStateAction(state, action);
   }
+
+  @Override
+  public int getVectorSize() {
+    return 9;
+  }
 }

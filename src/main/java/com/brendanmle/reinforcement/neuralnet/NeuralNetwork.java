@@ -11,12 +11,12 @@ public class NeuralNetwork {
       layers[i] = new Layer(
           layerSizes[i], 
           layerSizes[i + 1], 
-          ActivationFunction.RELU);
+          ActivationFunction.TANH);
     }
     layers[layers.length - 1] = new Layer(
         layerSizes[layers.length - 1], 
         layerSizes[layers.length], 
-        ActivationFunction.SIGMOID);
+        ActivationFunction.LINEAR);
   }
   
   public double[] run(double[] input) {
@@ -29,13 +29,6 @@ public class NeuralNetwork {
   }
   
   public void backprop(double[] result, double learningRate) {
-//    System.out.println();
-//    System.out.println("running backprop");
-//    System.out.println(Arrays.toString(lastOutput));
-//    System.out.println(Arrays.toString(result));
-//    System.out.println(learningRate);
-//    System.out.println();
-
     double[] deriv = diff(result, lastOutput);
     double diffMag = mag(deriv);
     for (int i = layers.length - 1; i >= 0; i--) {
