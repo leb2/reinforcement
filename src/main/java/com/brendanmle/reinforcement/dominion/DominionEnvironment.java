@@ -2,10 +2,7 @@ package com.brendanmle.reinforcement.dominion;
 
 import com.brendanmle.reinforcement.dominion.card.Card;
 import com.brendanmle.reinforcement.dominion.card.CardType;
-import com.brendanmle.reinforcement.learner.Action;
-import com.brendanmle.reinforcement.learner.Environment;
-import com.brendanmle.reinforcement.learner.Policy;
-import com.brendanmle.reinforcement.learner.State;
+import com.brendanmle.reinforcement.learner.*;
 
 import java.util.List;
 
@@ -56,10 +53,6 @@ public class DominionEnvironment implements Environment {
     this.opponentPolicy = policy;
   }
 
-  public List<DominionAction> getActions() {
-
-  }
-
   @Override
   public double performAction(Action action) {
     return 0;
@@ -71,12 +64,27 @@ public class DominionEnvironment implements Environment {
   }
 
   @Override
-  public void setState(State state) {
+  public StateAction getStateAction(Action action) {
+    return null;
+  }
 
+  @Override
+  public List<Action> getActions() {
+    return null;
+  }
+
+  @Override
+  public int getVectorSize() {
+    return 0;
   }
 
   @Override
   public boolean inTerminalState() {
     return false;
+  }
+
+  @Override
+  public void resetState() {
+
   }
 }

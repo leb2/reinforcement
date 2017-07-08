@@ -4,49 +4,29 @@ import com.brendanmle.reinforcement.neuralnet.NeuralNetwork;
 
 import java.util.List;
 
-public class NNActionValueFunction<S extends State<A>, A extends Action>
-        implements ActionValueFunction<S, A> {
+public class NNActionValueFunction implements ActionValueFunction {
 
-  private double learningRate;
-  private StateActionFactory<S, A> saFactory;
   private NeuralNetwork network;
-  private Policy<S, A> greedyPolicy = new EpsilonGreedyPolicy<>(this, 0);
+  private double learningRate;
 
-  public NNActionValueFunction(StateActionFactory<S, A> saFactory, double learningRate) {
-    this();
+  public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
-    this.saFactory = saFactory;
-
     network = new NeuralNetwork(
-            saFactory.getVectorSize(), 50, 50, 1);
-  }
-
-  private NNActionValueFunction() {}
-
-  @Override
-  public double getLearningRate() {
-    return 1;
+            environment.getVectorSize(), 50, 50, 1);
   }
 
   @Override
-  public double getValue(S state, A action) {
-    List<Double> inputStateAction = saFactory.create(state, action).toVector();
+  public double getValue(StateAction stateAction) {
+    List<Double> inputStateAction = stateAction.toVector();
     return network.run(doubleListToArr(inputStateAction))[0];
   }
 
   @Override
-  public void updateValue(S state, A action, double newValue) {
+  public void backup(StateAction stateAction, double newValue) {
 
     // TODO: remove variable
-    List<Double> inputStateAction = saFactory.create(state, action).toVector();
-     double value = getValue(state, action);
+    getValue(stateAction); // Needed for backprop. TODO: improve
     network.backprop(new double[]{newValue}, learningRate);
-    // double newVal = getValue(state, action); // TODO: remove
-  }
-
-  @Override
-  public Policy<S, A> getGreedyPolicy() {
-    return greedyPolicy;
   }
 
   // TODO: Improve bad runtime

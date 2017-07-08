@@ -1,41 +1,60 @@
 package com.brendanmle.reinforcement.tictactoe;
 
+import com.brendanmle.reinforcement.learner.Action;
 import com.brendanmle.reinforcement.learner.Environment;
 import com.brendanmle.reinforcement.learner.Policy;
+import com.brendanmle.reinforcement.learner.StateAction;
+import lombok.Builder;
 
-public class TicTacToeEnvironment implements Environment<TicTacToeState, TicTacToeAction> {
-  private Policy<TicTacToeState, TicTacToeAction> opponent;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
+public class TicTacToeEnvironment implements Environment {
+  private Policy opponent;
   private int[][] board = new int[3][3];
 
-  public void setOpponent(Policy<TicTacToeState, TicTacToeAction> opponent) {
+  public void setOpponent(Policy opponent) {
     this.opponent = opponent;
   }
 
-  private int currentTurn() {
-    return getState().currentTurn();
+  public TicTacToeEnvironment(Policy opponent) {
+    this();
+    resetState();
+    setOpponent(opponent);
   }
 
-  public static TicTacToeState emptyState() {
-    int[][] board = new int[3][3];
+  public TicTacToeEnvironment() {}
+
+  public void resetState() {
+    board = new int[3][3];
     for (int row = 0; row < 3; row++) {
       for (int col = 0; col < 3; col++) {
         board[row][col] = 0;
       }
     }
-    return new TicTacToeState(board);
   }
 
   @Override
-  public void setState(TicTacToeState state) {
-    for (int row = 0; row < 3; row++) {
-      for (int col = 0; col < 3; col++) {
-        board[row][col] = state.getAtPosition(row, col);
-      }
+  public StateAction getStateAction(Action a) {
+    TicTacToeAction action = (TicTacToeAction) a;
+    List<Double> stateVector =  getState().toVector();
+
+    double turn = (double) currentTurn();
+    stateVector.set(action.getRow() * 3 + action.getCol(), turn);
+
+    // Flip depending on turn to make it easier on neural network to generalize.
+    for (int i = 0; i < stateVector.size(); i++) {
+      stateVector.set(i, turn * stateVector.get(i));
     }
+
+    return new TicTacToeStateAction(stateVector);
   }
 
+
   @Override
-  public double performAction(TicTacToeAction action) {
+  public double performAction(Action a) {
+    TicTacToeAction action = (TicTacToeAction) a;
     if (opponent == null) {
       throw new UnsupportedOperationException("Opponent policy not initialized");
     }
@@ -43,16 +62,16 @@ public class TicTacToeEnvironment implements Environment<TicTacToeState, TicTacT
 
     // Reward is 1 if you move and win immediately.
     if (inTerminalState()) {
-      return getState().gameWon() ? 1 : 0;
+      return gameWon() ? 1 : 0;
     }
 
     // TODO: add reversed to help a function approximation
 
     // Reward is -1 if you move and then lose.
-    TicTacToeAction opponentMove = opponent.chooseAction(getState());
+    TicTacToeAction opponentMove = (TicTacToeAction) opponent.chooseAction(this);
     move(opponentMove.getRow(), opponentMove.getCol());
 
-    return getState().gameWon() ? -1 : 0;
+    return gameWon() ? -1 : 0;
   }
 
   public void move(int row, int col) {
@@ -66,10 +85,98 @@ public class TicTacToeEnvironment implements Environment<TicTacToeState, TicTacT
   public TicTacToeState getState() {
     return new TicTacToeState(board);
   }
-
-  @Override
-  public boolean inTerminalState() {
-    return getState().isTerminalState();
+  public int currentTurn() {
+    int totalX = 0;
+    int totalO = 0;
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (board[row][col] == 1) {
+          totalX += 1;
+        } else if (board[row][col] == -1) {
+          totalO += 1;
+        }
+      }
+    }
+    return totalX > totalO ? -1 : 1;
   }
 
+  public boolean inTerminalState() {
+    boolean allSpacesFilled = true;
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (board[row][col] == 0) {
+          allSpacesFilled = false;
+        }
+      }
+    }
+    return allSpacesFilled || gameWon();
+  }
+
+  private boolean gameWon() {
+    for (int i = 0; i < 3; i++) {
+      if (board[i][0] == board[i][1]
+              && board[i][1] == board[i][2]
+              && board[i][0] != 0) {
+        return true;
+      }
+      if (board[0][i] == board[1][i]
+              && board[1][i] == board[2][i]
+              && board[0][i] != 0) {
+        return true;
+      }
+    }
+    if (board[0][0] == board[1][1]
+            && board[1][1] == board[2][2]
+            && board[0][0] != 0) {
+      return true;
+    }
+    if (board[0][2] == board[1][1]
+            && board[1][1] == board[2][0]
+            && board[0][2] != 0) {
+      return true;
+    }
+
+    return false;
+  }
+
+  @Override
+  public List<Action> getActions() {
+    if (inTerminalState()) {
+      return Collections.emptyList();
+    }
+
+    List<Action> actions = new ArrayList<>();
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (board[row][col] == 0) {
+          actions.add(new TicTacToeAction(row, col));
+        }
+      }
+    }
+    return actions;
+  }
+
+  @Override
+  public String toString() {
+    StringBuilder boardString = new StringBuilder();
+
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        if (board[row][col] == 1) {
+          boardString.append("[X]");
+        } else if (board[row][col] == -1) {
+          boardString.append("[O]");
+        } else {
+          boardString.append("[ ]");
+        }
+      }
+      boardString.append("\n");
+    }
+    return boardString.toString();
+  }
+
+  @Override
+  public int getVectorSize() {
+    return 9;
+  }
 }

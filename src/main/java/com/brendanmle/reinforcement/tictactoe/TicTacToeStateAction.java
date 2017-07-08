@@ -1,29 +1,18 @@
 package com.brendanmle.reinforcement.tictactoe;
 
 import com.brendanmle.reinforcement.learner.StateAction;
-
-import java.util.ArrayList;
 import java.util.List;
 
-public class TicTacToeStateAction extends StateAction<TicTacToeState, TicTacToeAction> {
+public class TicTacToeStateAction implements StateAction {
+  private List<Double> vector;
 
-  public TicTacToeStateAction(TicTacToeState state, TicTacToeAction action) {
-    super(state, action);
+  public TicTacToeStateAction(List<Double> vector) {
+    this.vector = vector;
   }
 
   @Override
   public List<Double> toVector() {
-    List<Double> stateVector =  getState().toVector();
-    double turn = (double) getState().currentTurn();
-
-    stateVector.set(getAction().getRow() * 3 + getAction().getCol(), turn);
-
-    // Flip depending on turn to make it easier on neural network to generalize.
-    for (int i = 0; i < stateVector.size(); i++) {
-      stateVector.set(i, turn * stateVector.get(i));
-    }
-
-    return stateVector;
+    return vector;
 
 //    List<Double> stateVectorExtended = new ArrayList<>();
 //    for (Double aStateVector : stateVector) {
@@ -33,5 +22,21 @@ public class TicTacToeStateAction extends StateAction<TicTacToeState, TicTacToeA
 //      stateVectorExtended.add(aStateVector == -1 ? 1.0 : 0.0);
 //    }
 //    return stateVectorExtended;
+  }
+
+  @Override
+  public boolean equals(Object other) {
+    if (other == this) {
+      return true;
+    }
+    if (!(other instanceof TicTacToeStateAction)) {
+      return false;
+    }
+    return toVector().equals(((TicTacToeStateAction) other).toVector());
+  }
+
+  @Override
+  public int hashCode() {
+    return toVector().hashCode();
   }
 }

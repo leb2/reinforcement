@@ -2,14 +2,12 @@ package com.brendanmle.reinforcement.learner;
 
 import java.util.*;
 
-public class EpsilonGreedyPolicy<
-        S extends State<A>,
-        A extends Action> implements Policy<S, A> {
+public class EpsilonGreedyPolicy implements Policy {
 
-  private ActionValueFunction<S, A> q;
+  private ActionValueFunction q;
   private double epsilon;
 
-  public EpsilonGreedyPolicy(ActionValueFunction<S, A> q, double epsilon) {
+  public EpsilonGreedyPolicy(ActionValueFunction q, double epsilon) {
     this.q = q;
 
     if (!(epsilon <= 1 && epsilon >= 0)) {
@@ -18,9 +16,9 @@ public class EpsilonGreedyPolicy<
     this.epsilon = epsilon;
   }
 
-  public A chooseAction(S state) {
+  public Action chooseAction(Environment environment) {
     Random random = new Random();
-    List<A> actions = state.getActions();
+    List<Action> actions = environment.getActions();
     if (actions.size() == 0) {
       throw new IllegalStateException("No actions (must be in terminal state)");
     }
@@ -30,15 +28,15 @@ public class EpsilonGreedyPolicy<
       return actions.get(random.nextInt(actions.size()));
 
     } else {
-      A maxAction = Collections.max(actions, Comparator.comparing(
-              action -> q.getValue(state, action)));
+      Action maxAction = Collections.max(actions, Comparator.comparing(
+              action -> q.getValue(environment.getStateAction(action))));
 
       // TODO: these are here for debugging
-      double maxActionValue = q.getValue(state, maxAction);
-      Map<A, Double> actionValues = new HashMap<>();
-      for (int i = 0; i < actions.size(); i++) {
-        actionValues.put(actions.get(i), q.getValue(state, actions.get(i)));
-      }
+//      double maxActionValue = q.getValue(environment.getState(), maxAction);
+//      Map<Action, Double> actionValues = new HashMap<>();
+//      for (int i = 0; i < actions.size(); i++) {
+//        actionValues.put(actions.get(i), q.getValue(environment.getState(), actions.get(i)));
+//      }
 
       return maxAction;
     }

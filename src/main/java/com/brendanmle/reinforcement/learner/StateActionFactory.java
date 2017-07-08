@@ -1,10 +1,8 @@
 package com.brendanmle.reinforcement.learner;
 
-public interface StateActionFactory <
-        S extends State<A>,
-        A extends Action> {
+public interface StateActionFactory {
 
-  StateAction<S, A> create(S state, A action);
+  StateAction create(State state, Action action);
 
   // To help neural network determine input and output sizes
   int getVectorSize();

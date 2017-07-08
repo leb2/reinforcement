@@ -4,23 +4,12 @@ import com.brendanmle.reinforcement.learner.State;
 
 import java.util.List;
 
-public class DominionState implements State<DominionAction> {
+public class DominionState implements State {
 
-  public DominionState() {
-  }
-
-  @Override
-  public List<DominionAction> getActions() {
-    return null;
-  }
+  public DominionState() {}
 
   @Override
   public List<Double> toVector() {
     return null;
-  }
-
-  @Override
-  public boolean isTerminalState() {
-    return false;
   }
 }

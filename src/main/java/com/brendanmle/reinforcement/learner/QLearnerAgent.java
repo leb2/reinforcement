@@ -1,19 +1,17 @@
 package com.brendanmle.reinforcement.learner;
 
-public class QLearnerAgent<
-        S extends State<A>,
-        A extends Action> {
+public class QLearnerAgent {
 
-  protected ActionValueFunction<S, A> q;
-  protected Environment<S, A> environment;
-  protected Policy<S, A> policy;
-  protected Policy<S, A> trainedPolicy;
+  protected ActionValueFunction q;
+  protected Environment environment;
+  protected Policy policy;
+  protected Policy trainedPolicy;
 
-  public QLearnerAgent() {}
-
-  public QLearnerAgent(Environment<S, A> environment, ActionValueFunction q) {
-    this();
+  public QLearnerAgent(ActionValueFunction q) {
     setActionValueFunction(q);
+  }
+
+  public QLearnerAgent(Environment environment) {
     this.environment = environment;
   }
 
@@ -23,31 +21,45 @@ public class QLearnerAgent<
   public void train() {
     while (!environment.inTerminalState()) {
 
-      S state = environment.getState();
-      A action = policy.chooseAction(state);
+      Action action = policy.chooseAction(environment);
+      StateAction stateAction = environment.getStateAction(action);
 
       double reward = environment.performAction(action);
-      S statePrime = environment.getState();
 
-      q.backup(state, action, reward, statePrime);
+      // Next state of environment is implicitly passed.
+      backup(stateAction, reward);
     }
+  }
+
+  public void backup(
+          StateAction stateAction,
+          double reward) {
+
+    double currValue = q.getValue(stateAction);
+
+    double backupValue;
+    if (environment.inTerminalState()) {
+      backupValue = reward - currValue;
+    } else {
+      Action greedyAction = getGreedyPolicy().chooseAction(environment);
+      double greedyValue = q.getValue(environment.getStateAction(greedyAction));
+      backupValue = reward + greedyValue - currValue;
+    }
+
+    q.backup(stateAction, backupValue);
   }
 
   public void setActionValueFunction(ActionValueFunction q) {
     this.q = q;
-    policy = new EpsilonGreedyPolicy<S, A>(q, 1);
-    trainedPolicy = new EpsilonGreedyPolicy<S, A>(q, 0);
+    policy = new EpsilonGreedyPolicy(q, 1);
+    trainedPolicy = new EpsilonGreedyPolicy(q, 0);
   }
 
-  public Policy<S, A> getGreedyPolicy() {
+  public Policy getGreedyPolicy() {
     return trainedPolicy;
   }
 
-  public Policy<S, A> getPolicy() {
+  public Policy getPolicy() {
     return policy;
-  }
-
-  public double getValue(S state, A action) {
-    return q.getValue(state, action);
   }
 }
