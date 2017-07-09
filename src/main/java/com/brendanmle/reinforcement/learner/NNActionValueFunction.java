@@ -12,7 +12,7 @@ public class NNActionValueFunction implements ActionValueFunction {
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
     network = new NeuralNetwork(
-            environment.getVectorSize(), 50, 50, 1);
+            environment.getVectorSize(), 40, 40, 1);
   }
 
   @Override
@@ -36,5 +36,13 @@ public class NNActionValueFunction implements ActionValueFunction {
       arr[i] = list.get(i);
     }
     return arr;
+  }
+
+  public String toString() {
+    return network.toString();
+  }
+
+  public void print() {
+    network.print();
   }
 }

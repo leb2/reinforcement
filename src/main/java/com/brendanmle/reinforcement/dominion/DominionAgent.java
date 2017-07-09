@@ -28,6 +28,7 @@ public class DominionAgent extends QLearnerAgent {
         System.out.println(i);
       }
       if (i % testInterval == 0) {
+        System.out.println();
         System.out.printf("Average Reward: %f\n", test(getGreedyPolicy(), testAmount));
       }
 
@@ -42,6 +43,8 @@ public class DominionAgent extends QLearnerAgent {
   }
 
   public double play(Policy policy1, Policy policy2, double numIterations) {
+    // TODO: debug
+    boolean debug = policy1 instanceof HumanPolicy;
 
     double totalReward = 0;
     ((DominionEnvironment) environment).setOpponent(policy2);
@@ -50,8 +53,25 @@ public class DominionAgent extends QLearnerAgent {
       environment.resetState();
 
       while (!environment.inTerminalState()) {
+        if (debug) {
+          System.out.println(environment.getActions());
+          System.out.println("Best action: " + policy2.chooseAction(environment));
+          System.out.println("Best action value: "
+                  + q.getValue(environment.getStateAction(policy.chooseAction(environment))));
+        }
+
         Action action = policy1.chooseAction(environment);
-        totalReward += environment.performAction(action);
+
+        if (debug) {
+          System.out.println(environment.getStateAction(action).toVector());
+        }
+
+        double reward = environment.performAction(action);
+        if (debug) {
+          System.out.println("Reward for performing action: " + reward);
+        }
+
+        totalReward += reward;
       }
     }
 

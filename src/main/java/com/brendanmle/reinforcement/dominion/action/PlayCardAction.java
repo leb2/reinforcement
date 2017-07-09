@@ -18,16 +18,16 @@ public class PlayCardAction extends DominionAction {
   @Override
   public void modifyResourceVector(List<Double> resourceVector, Player player) {
     // Actions
-    resourceVector.set(0, resourceVector.get(0) - target.getActions() - 1);
+    resourceVector.set(0, resourceVector.get(0) + target.getActions() - 1);
 
     // Buys
-    resourceVector.set(1, resourceVector.get(1) - target.getBuys());
+    resourceVector.set(1, resourceVector.get(1) + target.getBuys());
 
     // Treasure
-    resourceVector.set(2, resourceVector.get(2) - target.getTreasure());
+    resourceVector.set(2, resourceVector.get(2) + target.getTreasure());
 
     // Hand Size
-    resourceVector.set(3, resourceVector.get(3) - target.getDraws() - 1);
+    resourceVector.set(3, resourceVector.get(3) + target.getDraws() - 1);
   }
 
   @Override // TODO: Add modifyDeckVector to cards for more complex actions

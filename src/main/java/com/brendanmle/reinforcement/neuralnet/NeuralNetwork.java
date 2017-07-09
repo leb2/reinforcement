@@ -11,12 +11,12 @@ public class NeuralNetwork {
       layers[i] = new Layer(
           layerSizes[i], 
           layerSizes[i + 1], 
-          ActivationFunction.TANH);
+          ActivationFunction.RELU);
     }
     layers[layers.length - 1] = new Layer(
         layerSizes[layers.length - 1], 
         layerSizes[layers.length], 
-        ActivationFunction.TANH);
+        ActivationFunction.LINEAR);
   }
   
   public double[] run(double[] input) {

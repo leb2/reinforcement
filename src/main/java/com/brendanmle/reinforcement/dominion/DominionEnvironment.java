@@ -128,6 +128,8 @@ public class DominionEnvironment implements Environment {
     finalVector.addAll(resourcesVector);
     finalVector.addAll(modeVector);
 
+    // TODO: Debug
+//    System.out.println(this);
     return new DefaultStateAction(finalVector);
   }
 
@@ -265,9 +267,9 @@ public class DominionEnvironment implements Environment {
     representation += currentPlayer().deckMultiset();
 
     representation += "\n\nRESOURCES";
-    representation += "\nTreasure: " + currentPlayer().getTreasure();
-    representation += "\nBuys: " + currentPlayer().getBuys();
     representation += "\nActions: " + currentPlayer().getActions();
+    representation += "\nBuys: " + currentPlayer().getBuys();
+    representation += "\nTreasure: " + currentPlayer().getTreasure();
 
     representation += "\n\nPLAYERS: ";
     for (int i = 0; i < players.size(); i++) {

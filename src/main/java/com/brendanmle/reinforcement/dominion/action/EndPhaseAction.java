@@ -34,15 +34,21 @@ public class EndPhaseAction extends DominionAction {
   @Override
   public void modifyResourceVector(List<Double> resourceVector, Player player) {
     if (getTargetMode() == GameMode.BUY) {
-      resourceVector.set(0, 1.0); // Action
-      resourceVector.set(1, 1.0); // Buy
-
       List<Card> hand = player.getHand();
       for (Card card : hand) {
         if (card.getType() == CardType.TREASURE) {
           resourceVector.set(2, resourceVector.get(2) + card.getTreasure());
         }
       }
+      resourceVector.set(0, 0.0); // Actions
+      resourceVector.set(3, 0.0); // Hand size
+    }
+
+    if (getTargetMode() == GameMode.TURN_FINISH) {
+      resourceVector.set(0, 1.0); // Actions
+      resourceVector.set(1, 1.0); // Buys
+      resourceVector.set(2, 0.0); // Treasures
+      resourceVector.set(3, 5.0); // Cards
     }
   }
 
@@ -58,6 +64,9 @@ public class EndPhaseAction extends DominionAction {
           player.incrementTreasure(card.getTreasure());
         }
       }
+
+      player.setActions(0);
+      hand.clear();
     }
   }
 

@@ -55,6 +55,10 @@ public class QLearnerAgent {
     trainedPolicy = new EpsilonGreedyPolicy(q, 0);
   }
 
+  public ActionValueFunction getActionValueFunction() {
+    return q;
+  }
+
   public Policy getGreedyPolicy() {
     return trainedPolicy;
   }
@@ -62,4 +66,5 @@ public class QLearnerAgent {
   public Policy getPolicy() {
     return policy;
   }
+
 }
