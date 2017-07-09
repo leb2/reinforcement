@@ -1,9 +1,24 @@
 package com.brendanmle.reinforcement.dominion;
 
+import com.brendanmle.reinforcement.dominion.card.Card;
+import com.brendanmle.reinforcement.dominion.card.CardType;
+import com.google.common.collect.HashMultiset;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multiset;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 public class Player {
   private int actions = 0;
   private int treasure = 0;
   private int buys = 0;
+
+  private List<Card> hand = new ArrayList<>();
+  private List<Card> deck = new ArrayList<>();
+
   private DominionEnvironment environment;
 
   public Player(DominionEnvironment environment) {
@@ -23,6 +38,56 @@ public class Player {
   public Player incrementBuys(int amount) {
     buys += amount;
     return this;
+  }
+
+  public void obtainCard(Card card, int quantity) {
+    for (int i = 0; i < quantity; i++) {
+      deck.add(card.duplicate());
+    }
+  }
+
+  public void drawNewHand() {
+    hand.clear();
+    draw(5);
+  }
+
+  public void draw(int amount) {
+    Random random = new Random();
+
+    for (int i = 0; i < amount; i++) {
+      Card card = deck.get(random.nextInt(deck.size()));
+      hand.add(card.duplicate()); // TODO: duplicate not needed?
+    }
+  }
+
+  public void setStartingResources() {
+    actions = 1;
+    buys = 1;
+    treasure = 0;
+  }
+
+  // TODO: Calculate total points
+  public int totalPoints() {
+    int total = 0;
+    for (Card card : deck) {
+      total += card.getPoints();
+    }
+    return total;
+  }
+
+  public List<Double> deckVector(List<Card> cards) {
+    Multiset<Card> counts = HashMultiset.create();
+    counts.addAll(deck);
+
+    List<Double> vector = new ArrayList<>();
+    for (int i = 0; i < cards.size(); i++) {
+      vector.add((double) counts.count(cards.get(i)));
+    }
+    return vector;
+  }
+
+  public void obtainCard(Card card) {
+    obtainCard(card, 1);
   }
 
   public DominionEnvironment getEnvironment() {
@@ -51,5 +116,24 @@ public class Player {
 
   public void setBuys(int buys) {
     this.buys = buys;
+  }
+
+  public int getHandSize() {
+    return hand.size();
+  }
+
+  // TODO: immutable getter?
+  public List<Card> getHand() {
+    return hand;
+  }
+
+  public List<Card> getDeck() {
+    return deck;
+  }
+
+  public Multiset<Card> deckMultiset() {
+    Multiset<Card> multiset = HashMultiset.create();
+    multiset.addAll(deck);
+    return multiset;
   }
 }

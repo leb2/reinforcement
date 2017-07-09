@@ -38,7 +38,13 @@ public class TicTacToeEnvironment implements Environment {
   @Override
   public StateAction getStateAction(Action a) {
     TicTacToeAction action = (TicTacToeAction) a;
-    List<Double> stateVector =  getState().toVector();
+
+    List<Double> stateVector = new ArrayList<>();
+    for (int row = 0; row < 3; row++) {
+      for (int col = 0; col < 3; col++) {
+        stateVector.add((double) board[row][col]);
+      }
+    }
 
     double turn = (double) currentTurn();
     stateVector.set(action.getRow() * 3 + action.getCol(), turn);
@@ -81,10 +87,6 @@ public class TicTacToeEnvironment implements Environment {
     board[row][col] = currentTurn();
   }
 
-  @Override
-  public TicTacToeState getState() {
-    return new TicTacToeState(board);
-  }
   public int currentTurn() {
     int totalX = 0;
     int totalO = 0;

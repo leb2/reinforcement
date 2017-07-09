@@ -32,6 +32,8 @@ public class Card {
     player.incrementTreasure(treasure)
             .incrementActions(actions - 1)
             .incrementBuys(buys);
+
+    player.draw(draws);
   }
 
   public Card duplicate() {
@@ -46,13 +48,24 @@ public class Card {
     return duplicate;
   }
 
-  // TODO: mirrorValues() helper method for duplicate
+  // TODO: mirrorValues() helper method for duplicate for duplicating on subclasses
 
   public boolean equals(Object other) {
     if (other == this) {
       return true;
     }
-    return other instanceof Card && Objects.equals(name, ((Card) other).name);
+    if (!(other instanceof Card)) {
+      return false;
+    }
+    return name.equals(((Card) other).name);
+  }
+
+  public int hashCode() {
+    return name.hashCode();
+  }
+
+  public String getName() {
+    return name;
   }
 
   public Card setTreasure(int treasure) {
@@ -60,9 +73,17 @@ public class Card {
     return this;
   }
 
+  public int getTreasure() {
+    return treasure;
+  }
+
   public Card setBuys(int buys) {
     this.buys = buys;
     return this;
+  }
+
+  public int getBuys() {
+    return buys;
   }
 
   public Card setActions(int actions) {
@@ -70,9 +91,17 @@ public class Card {
     return this;
   }
 
+  public int getActions() {
+    return actions;
+  }
+
   public Card setDraws(int draws) {
     this.draws = draws;
     return this;
+  }
+
+  public int getDraws() {
+    return draws;
   }
 
   public Card setType(CardType type) {
@@ -80,8 +109,21 @@ public class Card {
     return this;
   }
 
+  public CardType getType() {
+    return type;
+  }
+
   public Card setPoints(int points) {
     this.points = points;
     return this;
+  }
+
+  public int getPoints() {
+    return points;
+  }
+
+  @Override
+  public String toString() {
+    return name;
   }
 }

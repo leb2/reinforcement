@@ -15,10 +15,10 @@ public class TicTacToeAgent extends QLearnerAgent {
 
   public void train(int numIterations) {
     for (int i = 0; i < numIterations; i++) {
-      if (i % 5000 == 0) {
+      if (i % 1000 == 0) {
         System.out.println(i);
       }
-      if (i % 20000 == 0) {
+      if (i % 5000 == 0) {
         System.out.printf("Average Reward: %f\n", test(getGreedyPolicy(), 4000));
       }
 
@@ -40,7 +40,7 @@ public class TicTacToeAgent extends QLearnerAgent {
     return play(policy, new EpsilonGreedyPolicy(q, 1), numIterations);
   }
 
-  private double play(Policy policy1, Policy policy2, double numIterations) {
+  public double play(Policy policy1, Policy policy2, double numIterations) {
 
     double totalReward = 0;
 
@@ -100,7 +100,6 @@ public class TicTacToeAgent extends QLearnerAgent {
       }
 
       System.out.println("Game finsihed");
-      System.out.println(environment.getState());
     }
   }
 }

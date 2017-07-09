@@ -12,6 +12,5 @@ public class Remodel extends Card {
   public void play(Player player) {
     super.play(player);
     DominionEnvironment environment = player.getEnvironment();
-
   }
 }

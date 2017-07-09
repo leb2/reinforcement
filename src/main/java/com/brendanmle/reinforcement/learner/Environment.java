@@ -4,7 +4,6 @@ import java.util.List;
 
 public interface Environment {
   double performAction(Action action);
-  State getState();
   StateAction getStateAction(Action action);
 
   List<Action> getActions();

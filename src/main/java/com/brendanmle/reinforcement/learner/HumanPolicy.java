@@ -11,11 +11,13 @@ public class HumanPolicy implements Policy {
   public Action chooseAction(Environment environment) {
     List<Action> actions = environment.getActions();
 
+    System.out.println(environment);
     for (int i = 0; i < actions.size(); i++) {
-      System.out.printf("%d: %s\n", i, actions.get(i).toString());
+      System.out.println(i + ": " + actions.get(i).toString());
     }
 
     try {
+      System.out.printf("Enter index > ");
       int choice = scanner.nextInt();
       return actions.get(choice);
 

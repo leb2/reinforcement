@@ -1,12 +1,11 @@
-package com.brendanmle.reinforcement.tictactoe;
+package com.brendanmle.reinforcement.learner;
 
-import com.brendanmle.reinforcement.learner.StateAction;
 import java.util.List;
 
-public class TicTacToeStateAction implements StateAction {
+public class DefaultStateAction implements StateAction {
   private List<Double> vector;
 
-  public TicTacToeStateAction(List<Double> vector) {
+  public DefaultStateAction(List<Double> vector) {
     this.vector = vector;
   }
 
@@ -20,10 +19,10 @@ public class TicTacToeStateAction implements StateAction {
     if (other == this) {
       return true;
     }
-    if (!(other instanceof TicTacToeStateAction)) {
+    if (!(other instanceof DefaultStateAction)) {
       return false;
     }
-    return toVector().equals(((TicTacToeStateAction) other).toVector());
+    return toVector().equals(((DefaultStateAction) other).toVector());
   }
 
   @Override
@@ -31,3 +30,5 @@ public class TicTacToeStateAction implements StateAction {
     return toVector().hashCode();
   }
 }
+
+
