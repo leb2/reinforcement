@@ -41,7 +41,7 @@ public class EndPhaseAction extends DominionAction {
         }
       }
       resourceVector.set(0, 0.0); // Actions
-      resourceVector.set(3, 0.0); // Hand size
+//      resourceVector.set(3, 0.0); // Hand size
     }
 
     if (getTargetMode() == GameMode.TURN_FINISH) {
@@ -66,7 +66,6 @@ public class EndPhaseAction extends DominionAction {
       }
 
       player.setActions(0);
-      hand.clear();
     }
   }
 

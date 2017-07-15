@@ -3,12 +3,12 @@ package com.brendanmle.reinforcement.dominion;
 import com.brendanmle.reinforcement.dominion.action.BuyAction;
 import com.brendanmle.reinforcement.dominion.action.DominionAction;
 import com.brendanmle.reinforcement.dominion.action.EndPhaseAction;
-import com.brendanmle.reinforcement.dominion.action.PlayCardAction;
 import com.brendanmle.reinforcement.dominion.card.Card;
 import com.brendanmle.reinforcement.dominion.card.CardType;
 import com.brendanmle.reinforcement.learner.*;
 import com.google.common.collect.*;
 
+import javax.smartcardio.CardNotPresentException;
 import java.util.*;
 
 public class DominionEnvironment implements Environment {
@@ -35,12 +35,36 @@ public class DominionEnvironment implements Environment {
     this.opponentPolicy = policy;
   }
 
+  public double playerOnePoints() {
+    return players.get(0).totalPoints();
+  }
+
+  public boolean debug(int iteration, double reward) {
+    List<Double> scores = new ArrayList<>();
+    boolean won = true;
+    double score = players.get(0).totalPoints();
+
+    for (Player p : players) {
+      scores.add((double) p.totalPoints());
+
+      if (p.totalPoints() > score) {
+        won = false;
+      }
+    }
+    List<Card> deck = players.get(0).getDeck();
+    double proportion = reward / iteration;
+    return won;
+  }
+
+
   @Override
   public double performAction(Action a) {
     DominionAction action = (DominionAction) a;
     Player player = currentPlayer();
+    if (player != players.get(0)) {
+      throw new IllegalStateException("Player must be first player");
+    }
     double oldPoints = player.totalPoints();
-
     playAction(action);
 
     if (gameMode == GameMode.TURN_FINISH && !inTerminalState()) {
@@ -53,17 +77,22 @@ public class DominionEnvironment implements Environment {
       }
     }
 
-    return player.totalPoints() - oldPoints;
+    if (inTerminalState()) {
+      double score = player.totalPoints();
+      boolean won = true;
+      for (Player p : players) {
+        if (p.totalPoints() > score) {
+          won = false;
+        }
+      }
+      double diff = score - oldPoints;
+      return diff + (won ? 100 : 0);
+    } else {
+      return (player.totalPoints() - oldPoints);
+    }
   }
 
   private void playAction(DominionAction action) {
-
-    // TODO: Debugging print statements
-//    System.out.println(toString());
-//    System.out.println("Possible Actions:");
-//    System.out.println("Possible actions:" + getActions());
-//    System.out.println("Playing action " + action.toString());
-
     if (action.getMode() != gameMode) {
       throw new IllegalStateException(
               "Game mode of action must match mode of game");
@@ -83,18 +112,48 @@ public class DominionEnvironment implements Environment {
     incrementTurn();
   }
 
-  // TODO add to initialization so starint player has default values for esrouceksl
   private void incrementTurn() {
     currentPlayer().drawNewHand();
     turn += 1;
+    startTurn();
+  }
+
+  private void startTurn() {
     currentPlayer().setStartingResources();
     gameMode = GameMode.ACTION;
+    handleActionPhase();
+    EndPhaseAction endPhase = new EndPhaseAction(GameMode.ACTION);
+    endPhase.perform(this);
+  }
+
+  private void handleActionPhase() {
+    List<Card> preferences = ImmutableList.of(
+            cardNameMap.get("village"),
+            cardNameMap.get("market"),
+            cardNameMap.get("smithy"),
+            cardNameMap.get("woodcutter"));
+
+    boolean foundCard = true;
+    while (foundCard) {
+      if (currentPlayer().getActions() <= 0) {
+        return;
+      }
+      foundCard = false;
+
+      for (Card preference : preferences) {
+        if (currentPlayer().getHand().indexOf(preference) != -1) {
+          preference.play(currentPlayer());
+          foundCard = true;
+          break;
+        }
+      }
+    }
   }
 
   @Override
   public StateAction getStateAction(Action a) {
     DominionAction action = (DominionAction) a;
-    Player player = currentPlayer();
+    Player player = players.get(0); //currentPlayer();
 
     // Deck vector
     List<Double> deckVector = player.deckVector(cards);
@@ -122,14 +181,31 @@ public class DominionEnvironment implements Environment {
     }
     action.modifyModeVector(modeVector, Arrays.asList(GameMode.values()));
 
+    // ---- Create final vector ----
     List<Double> finalVector = new ArrayList<>();
-    finalVector.addAll(deckVector);
-    finalVector.addAll(pilesVector);
-    finalVector.addAll(resourcesVector);
-    finalVector.addAll(modeVector);
 
-    // TODO: Debug
-//    System.out.println(this);
+    // Deck
+    finalVector.addAll(deckVector);
+
+    // Provinces remaining
+    Card province = cardNameMap.get("province");
+    finalVector.add(pilesVector.get(cards.indexOf(province)));
+
+    // Buys and Gold
+    finalVector.add(resourcesVector.get(1));
+    finalVector.add(resourcesVector.get(2));
+
+    // Points
+//    finalVector.add((double) player.totalPoints());
+//    finalVector.add((double) players.get(1).totalPoints());
+//    finalVector.add((double) players.get(2).totalPoints());
+
+    // Game mode
+    finalVector.add(action.getTargetMode() == GameMode.TURN_FINISH ? 1.0 : 0.0);
+
+    // Turn
+    finalVector.add((double) turn / players.size() + 1);
+
     return new DefaultStateAction(finalVector);
   }
 
@@ -142,16 +218,11 @@ public class DominionEnvironment implements Environment {
     Player player = currentPlayer();
 
     actions.add(new EndPhaseAction(gameMode));
+    if (gameMode == GameMode.ACTION) {
+      throw new IllegalStateException("Action state should not be actionable anymore");
+    }
 
-    if (gameMode == GameMode.ACTION && player.getActions() > 0) {
-      List<Card> hand = player.getHand();
-      Set<Card> uniqueCards = new HashSet<>(hand);
-      for (Card card : uniqueCards) {
-        if (card.getType() == CardType.ACTION) {
-          actions.add(new PlayCardAction(card));
-        }
-      }
-    } else if (gameMode == GameMode.BUY && player.getBuys() > 0) {
+    if (gameMode == GameMode.BUY && player.getBuys() > 0) {
       for (Card card : cards) {
         if (card.getCost() <= player.getTreasure() && piles.count(card) > 0) {
           actions.add(new BuyAction(card));
@@ -197,8 +268,9 @@ public class DominionEnvironment implements Environment {
       player.obtainCard(cardNameMap.get("estate"), 3);
       piles.remove(cardNameMap.get("estate"), 3);
       player.drawNewHand();
-      player.setStartingResources();
     }
+
+    startTurn();
   }
 
   private void initializePiles() {
@@ -283,6 +355,7 @@ public class DominionEnvironment implements Environment {
   public Multiset<Card> getPiles() {
     return piles;
   }
+
   public void setMode(GameMode mode) {
     this.gameMode = mode;
   }

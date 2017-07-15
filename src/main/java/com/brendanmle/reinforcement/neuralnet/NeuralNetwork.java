@@ -11,7 +11,7 @@ public class NeuralNetwork {
       layers[i] = new Layer(
           layerSizes[i], 
           layerSizes[i + 1], 
-          ActivationFunction.RELU);
+          ActivationFunction.TANH);
     }
     layers[layers.length - 1] = new Layer(
         layerSizes[layers.length - 1], 

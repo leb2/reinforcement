@@ -33,6 +33,7 @@ public class Card {
             .incrementActions(actions - 1)
             .incrementBuys(buys);
 
+    player.getHand().remove(this);
     player.draw(draws);
   }
 

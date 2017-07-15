@@ -42,6 +42,5 @@ public class PlayCardAction extends DominionAction {
   public void perform(DominionEnvironment environment) {
     super.perform(environment);
     target.play(environment.currentPlayer());
-    environment.currentPlayer().getHand().remove(target);
   }
 }

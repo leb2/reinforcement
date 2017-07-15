@@ -6,6 +6,7 @@ public class QLearnerAgent {
   protected Environment environment;
   protected Policy policy;
   protected Policy trainedPolicy;
+  private double epsilon = 0.2;
 
   public QLearnerAgent(ActionValueFunction q) {
     setActionValueFunction(q);
@@ -14,6 +15,12 @@ public class QLearnerAgent {
   public QLearnerAgent(Environment environment) {
     this.environment = environment;
   }
+
+  public void setEpsilon(double epsilon) {
+    this.epsilon = epsilon;
+  }
+
+
 
   /**
    * Trains agent until the end of the episode.
@@ -35,23 +42,26 @@ public class QLearnerAgent {
           StateAction stateAction,
           double reward) {
 
-    double currValue = q.getValue(stateAction);
-
     double backupValue;
     if (environment.inTerminalState()) {
-      backupValue = reward - currValue;
+      backupValue = reward - q.getValue(stateAction);
+      if (backupValue == 0) {
+        int i = 1;
+      }
     } else {
       Action greedyAction = getGreedyPolicy().chooseAction(environment);
       double greedyValue = q.getValue(environment.getStateAction(greedyAction));
-      backupValue = reward + greedyValue - currValue;
-    }
 
-    q.backup(stateAction, backupValue);
+      backupValue = reward + greedyValue - q.getValue(stateAction);
+    }
+    if (Math.abs(backupValue) > 0) {
+      q.backup(stateAction, backupValue);
+    }
   }
 
   public void setActionValueFunction(ActionValueFunction q) {
     this.q = q;
-    policy = new EpsilonGreedyPolicy(q, 1);
+    policy = new EpsilonGreedyPolicy(q, epsilon);
     trainedPolicy = new EpsilonGreedyPolicy(q, 0);
   }
 

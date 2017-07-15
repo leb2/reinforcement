@@ -1,32 +1,47 @@
 package com.brendanmle.reinforcement.learner;
 
-import com.brendanmle.reinforcement.neuralnet.NeuralNetwork;
+
+import ml.misc.WindowData;
+import ml.ml.ExecutionModel;
+import ml.ml.Model;
+import ml.ml.NeuralNetwork;
+import ml.optimizers.AdamOptimizer;
+import ml.optimizers.GDOptimizer;
+import ml.optimizers.MeanSquaredError;
 
 import java.util.List;
 
 public class NNActionValueFunction implements ActionValueFunction {
 
-  private NeuralNetwork network;
   private double learningRate;
+  private ExecutionModel network;
+  private WindowData wd = new WindowData(1);
+  private Model model;
 
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
-    network = new NeuralNetwork(
-            environment.getVectorSize(), 40, 40, 1);
+    model = new NeuralNetwork(
+            environment.getVectorSize(), 30, 1);
+    model.initNormalWeights();
+    network = model.prepare();
   }
 
   @Override
   public double getValue(StateAction stateAction) {
     List<Double> inputStateAction = stateAction.toVector();
-    return network.run(doubleListToArr(inputStateAction))[0];
+    return network.eval(doubleListToArr(inputStateAction))[0];
   }
 
   @Override
   public void backup(StateAction stateAction, double newValue) {
 
-    // TODO: remove variable
-    getValue(stateAction); // Needed for backprop. TODO: improve
-    network.backprop(new double[]{newValue}, learningRate);
+    double value = getValue(stateAction); // Needed for backprop. TODO: improve
+    stateAction.toVector();
+
+    network.backprop(doubleListToArr(stateAction.toVector()), new double[]{value + newValue},
+            new MeanSquaredError(),
+            new AdamOptimizer(learningRate));
+//    network.backprop(new double[]{value + newValue}, learningRate);
   }
 
   // TODO: Improve bad runtime
@@ -42,7 +57,12 @@ public class NNActionValueFunction implements ActionValueFunction {
     return network.toString();
   }
 
-  public void print() {
-    network.print();
+  public void save(String file) {
+    model.saveModel(file);
+    System.out.println("Saved to file " + file);
+  }
+
+  public void load(String file) {
+    model.loadModel(file);
   }
 }

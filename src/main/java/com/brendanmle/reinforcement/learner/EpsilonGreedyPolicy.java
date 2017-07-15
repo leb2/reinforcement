@@ -6,6 +6,7 @@ public class EpsilonGreedyPolicy implements Policy {
 
   private ActionValueFunction q;
   private double epsilon;
+  private Random random = new Random();
 
   public EpsilonGreedyPolicy(ActionValueFunction q, double epsilon) {
     this.q = q;
@@ -17,7 +18,6 @@ public class EpsilonGreedyPolicy implements Policy {
   }
 
   public Action chooseAction(Environment environment) {
-    Random random = new Random();
     List<Action> actions = environment.getActions();
     if (actions.size() == 0) {
       throw new IllegalStateException("No actions (must be in terminal state)");
@@ -30,14 +30,6 @@ public class EpsilonGreedyPolicy implements Policy {
     } else {
       Action maxAction = Collections.max(actions, Comparator.comparing(
               action -> q.getValue(environment.getStateAction(action))));
-
-      // TODO: these are here for debugging
-      double maxActionValue = q.getValue(environment.getStateAction(maxAction));
-      Map<Action, Double> actionValues = new HashMap<>();
-      for (int i = 0; i < actions.size(); i++) {
-        actionValues.put(actions.get(i), q.getValue(environment.getStateAction(maxAction)));
-      }
-
       return maxAction;
     }
   }
