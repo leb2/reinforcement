@@ -9,13 +9,22 @@ import java.io.Writer;
 
 // TODO: Make this a generic class
 public class DominionAgent extends QLearnerAgent {
-  private int testAmount = 100;
-  private int testInterval = 5000;
+  private int testAmount = 1000;
+  private int testInterval = 1000;
+  private String loadFile = null;
+  private double learningRate = 0.002;
+  private ActionValueFunction q;
 
   public DominionAgent() {
     super(new DominionEnvironment(3));
-    this.setActionValueFunction(new NNActionValueFunction(environment, 0.001));
+    this.q = new NNActionValueFunction(environment, learningRate);
+    this.setActionValueFunction(q);
     setEpsilon(0.2);
+  }
+
+  public void setLearningRate(double learningRate) {
+    this.learningRate = learningRate;
+    q.setLearningRate(learningRate);
   }
 
   public void setTestAmount(int testAmount) {
@@ -26,32 +35,26 @@ public class DominionAgent extends QLearnerAgent {
     this.testInterval = testInterval;
   }
 
+  public void setLoadFile(String loadFile) {
+    this.loadFile = loadFile;
+  }
+
   public void train(int numIterations) {
     double best = 0;
-    ((NNActionValueFunction) q).load("last.mw");
+    if (loadFile != null && !loadFile.equals("")) {
+      ((NNActionValueFunction) q).load(loadFile);
+    }
 
     for (int i = 0; i < numIterations; i++) {
-
-      if ((i + 1) % 5000 == 0) {
-        ((NNActionValueFunction) q).save("last.mw");
-      }
-      if ((i + 1) % 500 == 0) {
+      if ((i + 1) % 1000 == 0) {
         System.out.println(i + 1);
       }
       if ((i + 1) % testInterval == 0) {
         double average = test(getGreedyPolicy(), testAmount);
-
-        try {
-          Writer output = new BufferedWriter(new FileWriter("scores.csv", true));
-          output.append(average + "\n");
-          output.close();
-
-        } catch (IOException e) {
-          e.printStackTrace();
-        }
+        ((NNActionValueFunction) q).save("last.mw");
 
         System.out.printf("Average Reward: %f\n", average);
-        if (average > 30 && average > best) {
+        if (average > 20 && average > best) {
           ((NNActionValueFunction) q).save("dominion.mw");
           best = average;
         }
@@ -60,11 +63,6 @@ public class DominionAgent extends QLearnerAgent {
       environment.resetState();
       ((DominionEnvironment) environment).setOpponent(new BigMoneyPolicy());
       train();
-//      System.out.println("---");
-//      for (Player player : ((DominionEnvironment) environment).getPlayers()) {
-//        System.out.println(player.totalPoints());
-//      }
-//      System.out.println("---");
     }
   }
 
@@ -114,6 +112,20 @@ public class DominionAgent extends QLearnerAgent {
 
     System.out.println("proportion won: " + numWon / numIterations);
     System.out.println("Average score: " + totalScore / numIterations);
+
+    if (!debug) {
+      try {
+        Writer output = new BufferedWriter(new FileWriter("rewards.csv", true));
+        output.append(totalReward / numIterations + "\n");
+        output.close();
+
+        Writer output2 = new BufferedWriter(new FileWriter("winRate.csv", true));
+        output2.append(numWon / numIterations + "\n");
+        output2.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+    }
     return totalReward / numIterations;
   }
 

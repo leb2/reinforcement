@@ -11,8 +11,9 @@ import java.util.List;
 // TODO: Move all action code to action class!!!!
 public class EndPhaseAction extends DominionAction {
 
-  public EndPhaseAction(GameMode gameMode) {
+  public EndPhaseAction(GameMode gameMode, int index) {
     super(gameMode);
+    this.index = index;
 
     if (getMode() == GameMode.ACTION) {
       setTargetMode(GameMode.BUY);

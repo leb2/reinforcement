@@ -80,8 +80,8 @@ public class Player {
     counts.addAll(deck);
 
     List<Double> vector = new ArrayList<>();
-    for (int i = 0; i < cards.size(); i++) {
-      vector.add((double) counts.count(cards.get(i)));
+    for (Card card : cards) {
+      vector.add((double) counts.count(card));
     }
     return vector;
   }

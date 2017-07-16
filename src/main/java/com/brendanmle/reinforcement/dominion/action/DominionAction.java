@@ -9,7 +9,8 @@ import com.brendanmle.reinforcement.learner.Action;
 import java.util.List;
 
 // TODO: Make abstract class
-public class DominionAction implements Action {
+public abstract class DominionAction implements Action {
+  protected int index = 0;
 
   // Mode of environment for which the action can act in.
   private GameMode mode;
@@ -21,9 +22,10 @@ public class DominionAction implements Action {
     this.targetMode = mode;
   }
 
-  public DominionAction(GameMode mode, Card target) {
+  public DominionAction(GameMode mode, Card target, int index) {
     this(mode);
     setTarget(target);
+    this.index = index;
   }
 
   public void setTarget(Card target) {
@@ -66,6 +68,11 @@ public class DominionAction implements Action {
   @Override
   public List<Double> toVector() {
     return null;
+  }
+
+  @Override
+  public int getIndex() {
+    return index;
   }
 
   @Override

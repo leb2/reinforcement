@@ -1,29 +1,34 @@
 package com.brendanmle.reinforcement.learner;
 
-
 import ml.misc.WindowData;
 import ml.ml.ExecutionModel;
 import ml.ml.Model;
 import ml.ml.NeuralNetwork;
 import ml.optimizers.AdamOptimizer;
-import ml.optimizers.GDOptimizer;
 import ml.optimizers.MeanSquaredError;
 
 import java.util.List;
 
 public class NNActionValueFunction implements ActionValueFunction {
 
-  private double learningRate;
-  private ExecutionModel network;
-  private WindowData wd = new WindowData(1);
-  private Model model;
+  protected double learningRate;
+  protected ExecutionModel network;
+  protected Model model;
+  protected Environment environment;
+  protected WindowData window = new WindowData(5);
 
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
     model = new NeuralNetwork(
             environment.getVectorSize(), 30, 1);
     model.initNormalWeights();
+    this.environment = environment;
     network = model.prepare();
+  }
+
+  @Override
+  public void setLearningRate(double learningRate) {
+    this.learningRate = learningRate;
   }
 
   @Override
@@ -38,14 +43,15 @@ public class NNActionValueFunction implements ActionValueFunction {
     double value = getValue(stateAction); // Needed for backprop. TODO: improve
     stateAction.toVector();
 
-    network.backprop(doubleListToArr(stateAction.toVector()), new double[]{value + newValue},
+    network.backprop(
+            doubleListToArr(stateAction.toVector()),
+            new double[]{value + newValue},
             new MeanSquaredError(),
             new AdamOptimizer(learningRate));
-//    network.backprop(new double[]{value + newValue}, learningRate);
   }
 
   // TODO: Improve bad runtime
-  private static double[] doubleListToArr(List<Double> list) {
+  protected static double[] doubleListToArr(List<Double> list) {
     double[] arr = new double[list.size()];
     for (int i = 0; i < list.size(); i++) {
       arr[i] = list.get(i);

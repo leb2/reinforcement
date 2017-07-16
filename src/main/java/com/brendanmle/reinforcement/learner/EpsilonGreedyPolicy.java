@@ -4,9 +4,9 @@ import java.util.*;
 
 public class EpsilonGreedyPolicy implements Policy {
 
-  private ActionValueFunction q;
-  private double epsilon;
-  private Random random = new Random();
+  protected ActionValueFunction q;
+  protected double epsilon;
+  protected Random random = new Random();
 
   public EpsilonGreedyPolicy(ActionValueFunction q, double epsilon) {
     this.q = q;
@@ -30,6 +30,9 @@ public class EpsilonGreedyPolicy implements Policy {
     } else {
       Action maxAction = Collections.max(actions, Comparator.comparing(
               action -> q.getValue(environment.getStateAction(action))));
+
+      // TODO: debug
+      double maxActionValue = q.getValue(environment.getStateAction(maxAction));
       return maxAction;
     }
   }

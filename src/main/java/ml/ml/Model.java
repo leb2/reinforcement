@@ -36,7 +36,7 @@ public interface Model {
       }
       s.close();
     } catch (IOException e) {
-      System.out.println("Failed to save weights");
+      System.out.println("Failed to load weights");
     }
   }
 

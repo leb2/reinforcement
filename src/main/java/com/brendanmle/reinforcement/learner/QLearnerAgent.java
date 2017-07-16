@@ -20,8 +20,6 @@ public class QLearnerAgent {
     this.epsilon = epsilon;
   }
 
-
-
   /**
    * Trains agent until the end of the episode.
    */
@@ -45,9 +43,6 @@ public class QLearnerAgent {
     double backupValue;
     if (environment.inTerminalState()) {
       backupValue = reward - q.getValue(stateAction);
-      if (backupValue == 0) {
-        int i = 1;
-      }
     } else {
       Action greedyAction = getGreedyPolicy().chooseAction(environment);
       double greedyValue = q.getValue(environment.getStateAction(greedyAction));

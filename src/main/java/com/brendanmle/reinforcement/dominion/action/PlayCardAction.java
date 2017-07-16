@@ -9,8 +9,8 @@ import java.util.List;
 
 public class PlayCardAction extends DominionAction {
 
-  public PlayCardAction(Card target) {
-    super(GameMode.ACTION, target);
+  public PlayCardAction(Card target, int index) {
+    super(GameMode.ACTION, target, index);
   }
 
 

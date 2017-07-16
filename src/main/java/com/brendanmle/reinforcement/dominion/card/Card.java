@@ -37,6 +37,7 @@ public class Card {
     player.draw(draws);
   }
 
+  // TODO: probably not even needed
   public Card duplicate() {
     Card duplicate = new Card(name, cost);
     duplicate.setTreasure(treasure)

@@ -7,8 +7,6 @@ import com.brendanmle.reinforcement.dominion.card.Card;
 import com.brendanmle.reinforcement.dominion.card.CardType;
 import com.brendanmle.reinforcement.learner.*;
 import com.google.common.collect.*;
-
-import javax.smartcardio.CardNotPresentException;
 import java.util.*;
 
 public class DominionEnvironment implements Environment {
@@ -56,6 +54,10 @@ public class DominionEnvironment implements Environment {
     return won;
   }
 
+  @Override
+  public int getOutputSize() {
+    return cards.size() + 1;
+  }
 
   @Override
   public double performAction(Action a) {
@@ -86,7 +88,8 @@ public class DominionEnvironment implements Environment {
         }
       }
       double diff = score - oldPoints;
-      return diff + (won ? 100 : 0);
+      return diff;
+//      return diff + (won ? 100 : 0);
     } else {
       return (player.totalPoints() - oldPoints);
     }
@@ -122,7 +125,7 @@ public class DominionEnvironment implements Environment {
     currentPlayer().setStartingResources();
     gameMode = GameMode.ACTION;
     handleActionPhase();
-    EndPhaseAction endPhase = new EndPhaseAction(GameMode.ACTION);
+    EndPhaseAction endPhase = new EndPhaseAction(GameMode.ACTION, 0);
     endPhase.perform(this);
   }
 
@@ -148,6 +151,43 @@ public class DominionEnvironment implements Environment {
         }
       }
     }
+  }
+
+  public List<Double> getState() {
+    Player player = players.get(0); //currentPlayer();
+    List<Double> deckVector = player.deckVector(cards);
+    List<Double> pilesVector = new ArrayList<>();
+    for (Card card : cards) {
+      pilesVector.add((double) piles.count(card));
+    }
+    List<Double> resourcesVector = new ArrayList<>();
+    resourcesVector.add((double) player.getActions());
+    resourcesVector.add((double) player.getBuys());
+    resourcesVector.add((double) player.getTreasure());
+    resourcesVector.add((double) player.getHandSize());
+    List<Double> modeVector = new ArrayList<>();
+    for (GameMode mode : GameMode.values()) {
+      modeVector.add(gameMode == mode ? 1.0 : 0.0);
+    }
+
+    // ---- Create final vector ----
+    List<Double> finalVector = new ArrayList<>();
+
+    // Deck
+    finalVector.addAll(deckVector);
+
+    // Provinces remaining
+    Card province = cardNameMap.get("province");
+    finalVector.add(pilesVector.get(cards.indexOf(province)));
+
+    // Buys and Gold
+    finalVector.add(resourcesVector.get(1));
+    finalVector.add(resourcesVector.get(2));
+
+    // Turn
+    finalVector.add((double) turn / players.size() + 1);
+
+    return finalVector;
   }
 
   @Override
@@ -206,7 +246,7 @@ public class DominionEnvironment implements Environment {
     // Turn
     finalVector.add((double) turn / players.size() + 1);
 
-    return new DefaultStateAction(finalVector);
+    return new DefaultStateAction(finalVector, getState(), action);
   }
 
   @Override
@@ -217,25 +257,32 @@ public class DominionEnvironment implements Environment {
     List<Action> actions = new LinkedList<>();
     Player player = currentPlayer();
 
-    actions.add(new EndPhaseAction(gameMode));
+    actions.add(new EndPhaseAction(gameMode, 0));
+
     if (gameMode == GameMode.ACTION) {
       throw new IllegalStateException("Action state should not be actionable anymore");
     }
 
     if (gameMode == GameMode.BUY && player.getBuys() > 0) {
-      for (Card card : cards) {
+
+      for (int i = 0; i < cards.size(); i++) {
+        Card card = cards.get(i);
         if (card.getCost() <= player.getTreasure() && piles.count(card) > 0) {
-          actions.add(new BuyAction(card));
+          actions.add(new BuyAction(card, i + 1));
         }
       }
     }
-
     return actions;
   }
 
   @Override
   public int getVectorSize() {
     return getStateAction(getActions().get(0)).toVector().size();
+  }
+
+  @Override
+  public int getStateSize() {
+    return getState().size();
   }
 
   @Override

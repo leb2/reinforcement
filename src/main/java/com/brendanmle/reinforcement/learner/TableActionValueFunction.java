@@ -12,6 +12,10 @@ public class TableActionValueFunction implements ActionValueFunction {
     this.learningRate = learningRate;
   }
 
+  public void setLearningRate(double learningRate) {
+    this.learningRate = learningRate;
+  }
+
   @Override
   public double getValue(StateAction stateAction) {
     return actionValueMap.computeIfAbsent(stateAction, q -> 0.0);

@@ -4,14 +4,28 @@ import java.util.List;
 
 public class DefaultStateAction implements StateAction {
   private List<Double> vector;
+  private List<Double> state;
+  private Action action;
 
-  public DefaultStateAction(List<Double> vector) {
+  public DefaultStateAction(List<Double> vector, List<Double> state, Action action) {
     this.vector = vector;
+    this.action = action;
+    this.state = state;
   }
 
   @Override
   public List<Double> toVector() {
     return vector;
+  }
+
+  @Override
+  public List<Double> stateVector() {
+    return state;
+  }
+
+  @Override
+  public Action getAction() {
+    return action;
   }
 
   @Override
