@@ -33,6 +33,11 @@ public class EpsilonGreedyPolicy implements Policy {
 
       // TODO: debug
       double maxActionValue = q.getValue(environment.getStateAction(maxAction));
+      Map<Action, Double> valueMap = new HashMap<>();
+      for (Action action : actions) {
+        valueMap.put(action, q.getValue(environment.getStateAction(action)));
+      }
+
       return maxAction;
     }
   }

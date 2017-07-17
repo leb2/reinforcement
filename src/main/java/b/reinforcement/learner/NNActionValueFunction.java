@@ -16,12 +16,12 @@ public class NNActionValueFunction implements ActionValueFunction {
   protected ExecutionModel network;
   protected Model model;
   protected Environment environment;
-  protected WindowData window = new WindowData(5);
+  protected WindowData window = new WindowData(10);
 
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
     model = new NeuralNetwork(
-            environment.getVectorSize(), 20, 1);
+            environment.getVectorSize(), 30, 1);
     model.initNormalWeights();
     this.environment = environment;
     network = model.prepare();
@@ -40,7 +40,6 @@ public class NNActionValueFunction implements ActionValueFunction {
 
   @Override
   public void backup(StateAction stateAction, double newValue) {
-
     double value = getValue(stateAction); // Needed for backprop. TODO: improve
     stateAction.toVector();
 

@@ -10,7 +10,6 @@ import java.util.List;
 
 // TODO: Make abstract class
 public abstract class DominionAction implements Action {
-  protected int index = 0;
 
   // Mode of environment for which the action can act in.
   private GameMode mode;
@@ -22,10 +21,9 @@ public abstract class DominionAction implements Action {
     this.targetMode = mode;
   }
 
-  public DominionAction(GameMode mode, Card target, int index) {
+  public DominionAction(GameMode mode, Card target) {
     this(mode);
     setTarget(target);
-    this.index = index;
   }
 
   public void setTarget(Card target) {
@@ -68,11 +66,6 @@ public abstract class DominionAction implements Action {
   @Override
   public List<Double> toVector() {
     return null;
-  }
-
-  @Override
-  public int getIndex() {
-    return index;
   }
 
   @Override

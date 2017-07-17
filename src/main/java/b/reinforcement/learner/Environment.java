@@ -9,11 +9,8 @@ public interface Environment {
   List<Action> getActions();
 
   int getVectorSize();
-  int getStateSize();
-  int getOutputSize();
 
   boolean inTerminalState();
-  List<Double> getState();
 
   void resetState();
 }

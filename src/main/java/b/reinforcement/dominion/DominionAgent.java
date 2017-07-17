@@ -143,6 +143,7 @@ public class DominionAgent extends QLearnerAgent {
   public void test(String target) {
     NNActionValueFunction playerQ = new NNActionValueFunction(environment, 0);
     playerQ.load(target);
+
     test(new EpsilonGreedyPolicy(playerQ, 0), 10000);
   }
 

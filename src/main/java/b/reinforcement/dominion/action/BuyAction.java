@@ -10,8 +10,8 @@ import java.util.List;
 
 public class BuyAction extends DominionAction {
 
-  public BuyAction(Card target, int index) {
-    super(GameMode.BUY, target, index);
+  public BuyAction(Card target) {
+    super(GameMode.BUY, target);
   }
 
   @Override

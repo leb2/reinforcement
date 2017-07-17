@@ -16,6 +16,7 @@ public class Player {
   private List<Card> hand = new ArrayList<>();
   private List<Card> deck = new ArrayList<>();
   private Multiset<Card> deckCounts = HashMultiset.create();
+  private Multiset<Card> handCounts = HashMultiset.create();
 
   private DominionEnvironment environment;
 
@@ -41,12 +42,13 @@ public class Player {
   public void obtainCard(Card card, int quantity) {
     for (int i = 0; i < quantity; i++) {
       deck.add(card.duplicate());
+      deckCounts.add(card);
     }
-    deckCounts.add(card);
   }
 
   public void drawNewHand() {
     hand.clear();
+    handCounts.clear();
     draw(5);
   }
 
@@ -55,7 +57,8 @@ public class Player {
 
     for (int i = 0; i < amount; i++) {
       Card card = deck.get(random.nextInt(deck.size()));
-      hand.add(card); // TODO: duplicate not needed?
+      hand.add(card);
+      handCounts.add(card);
     }
   }
 
@@ -65,7 +68,6 @@ public class Player {
     treasure = 0;
   }
 
-  // TODO: Calculate total points
   public int totalPoints() {
     int total = 0;
     for (Card card : deck) {
@@ -78,6 +80,14 @@ public class Player {
     List<Double> vector = new ArrayList<>();
     for (Card card : cards) {
       vector.add((double) deckCounts.count(card));
+    }
+    return vector;
+  }
+
+  public List<Double> handVector(List<Card> actionCards) {
+    List<Double> vector = new ArrayList<>();
+    for (Card card : actionCards) {
+      vector.add((double) handCounts.count(card));
     }
     return vector;
   }

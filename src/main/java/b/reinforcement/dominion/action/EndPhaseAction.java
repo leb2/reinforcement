@@ -11,9 +11,8 @@ import java.util.List;
 // TODO: Move all action code to action class!!!!
 public class EndPhaseAction extends DominionAction {
 
-  public EndPhaseAction(GameMode gameMode, int index) {
+  public EndPhaseAction(GameMode gameMode) {
     super(gameMode);
-    this.index = index;
 
     if (getMode() == GameMode.ACTION) {
       setTargetMode(GameMode.BUY);
@@ -42,7 +41,7 @@ public class EndPhaseAction extends DominionAction {
         }
       }
       resourceVector.set(0, 0.0); // Actions
-//      resourceVector.set(3, 0.0); // Hand size
+      resourceVector.set(3, 0.0); // Hand size
     }
 
     if (getTargetMode() == GameMode.TURN_FINISH) {
@@ -66,6 +65,7 @@ public class EndPhaseAction extends DominionAction {
         }
       }
 
+      player.getHand().clear();
       player.setActions(0);
     }
   }
