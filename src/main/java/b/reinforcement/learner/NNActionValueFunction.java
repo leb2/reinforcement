@@ -5,6 +5,7 @@ import ml.ml.ExecutionModel;
 import ml.ml.Model;
 import ml.ml.NeuralNetwork;
 import ml.optimizers.AdamOptimizer;
+import ml.optimizers.GDOptimizer;
 import ml.optimizers.MeanSquaredError;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class NNActionValueFunction implements ActionValueFunction {
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
     model = new NeuralNetwork(
-            environment.getVectorSize(), 8, 8, 1);
+            environment.getVectorSize(), 20, 1);
     model.initNormalWeights();
     this.environment = environment;
     network = model.prepare();

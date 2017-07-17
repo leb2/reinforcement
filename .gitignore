@@ -2,4 +2,4 @@
 target/
 *.iml
 *.csv
-*.mw
+./*.mw

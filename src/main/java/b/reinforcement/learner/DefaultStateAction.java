@@ -4,13 +4,9 @@ import java.util.List;
 
 public class DefaultStateAction implements StateAction {
   private List<Double> vector;
-  private List<Double> state;
-  private Action action;
 
-  public DefaultStateAction(List<Double> vector, List<Double> state, Action action) {
+  public DefaultStateAction(List<Double> vector) {
     this.vector = vector;
-    this.action = action;
-    this.state = state;
   }
 
   @Override
@@ -20,12 +16,12 @@ public class DefaultStateAction implements StateAction {
 
   @Override
   public List<Double> stateVector() {
-    return state;
+    return null; // TODO: Remove
   }
 
   @Override
   public Action getAction() {
-    return action;
+    return null; // TODO: Remove
   }
 
   @Override

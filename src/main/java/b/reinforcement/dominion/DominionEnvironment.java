@@ -46,7 +46,7 @@ public class DominionEnvironment implements Environment {
     for (Player p : players) {
       scores.add((double) p.totalPoints());
 
-      if (p.totalPoints() > score) {
+      if (p != players.get(0) && p.totalPoints() > score) {
         won = false;
       }
     }
@@ -60,6 +60,18 @@ public class DominionEnvironment implements Environment {
     return cards.size() + 1;
   }
 
+  public double winMargin() {
+    double secondBest = 0;
+    for (int i = 1; i < players.size(); i++) {
+      Player player = players.get(i);
+      double points = player.totalPoints();
+      if (points > secondBest) {
+        secondBest = points;
+      }
+    }
+    return players.get(0).totalPoints() - secondBest;
+  }
+
   @Override
   public double performAction(Action a) {
     DominionAction action = (DominionAction) a;
@@ -68,6 +80,7 @@ public class DominionEnvironment implements Environment {
       throw new IllegalStateException("Player must be first player");
     }
     double oldPoints = player.totalPoints();
+    double oldMargin = winMargin();
     playAction(action);
 
     if (gameMode == GameMode.TURN_FINISH && !inTerminalState()) {
@@ -80,6 +93,7 @@ public class DominionEnvironment implements Environment {
       }
     }
 
+
     if (inTerminalState()) {
       double score = player.totalPoints();
       boolean won = true;
@@ -88,11 +102,10 @@ public class DominionEnvironment implements Environment {
           won = false;
         }
       }
-      double diff = score - oldPoints;
-      return diff;
-//      return diff + (won ? 100 : 0);
+      return winMargin() - oldMargin;
     } else {
-      return (player.totalPoints() - oldPoints);
+      return winMargin() - oldMargin;
+//      return (player.totalPoints() - oldPoints);
     }
   }
 
@@ -247,7 +260,7 @@ public class DominionEnvironment implements Environment {
     // Turn
     finalVector.add((double) turn / players.size() + 1);
 
-    return new DefaultStateAction(finalVector, getState(), action);
+    return new DefaultStateAction(finalVector);
   }
 
   @Override

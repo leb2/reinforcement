@@ -40,7 +40,7 @@ public class DominionAgent extends QLearnerAgent {
   }
 
   public void train(int numIterations) {
-    double best = 0;
+    double best = -999;
     if (loadFile != null && !loadFile.equals("")) {
       ((NNActionValueFunction) q).load(loadFile);
     }
@@ -54,7 +54,7 @@ public class DominionAgent extends QLearnerAgent {
         ((NNActionValueFunction) q).save("last.mw");
 
         System.out.printf("Average Reward: %f\n", average);
-        if (average > 20 && average > best) {
+        if (average > best) {
           ((NNActionValueFunction) q).save("dominion.mw");
           best = average;
         }
@@ -122,6 +122,10 @@ public class DominionAgent extends QLearnerAgent {
         Writer output2 = new BufferedWriter(new FileWriter("winRate.csv", true));
         output2.append(numWon / numIterations + "\n");
         output2.close();
+
+        Writer output3 = new BufferedWriter(new FileWriter("score.csv", true));
+        output3.append(totalScore / numIterations + "\n");
+        output3.close();
       } catch (IOException e) {
         e.printStackTrace();
       }
@@ -135,4 +139,11 @@ public class DominionAgent extends QLearnerAgent {
 
     play(new HumanPolicy(), new EpsilonGreedyPolicy(opponentQ, 0), 999);
   }
+
+  public void test(String target) {
+    NNActionValueFunction playerQ = new NNActionValueFunction(environment, 0);
+    playerQ.load(target);
+    test(new EpsilonGreedyPolicy(playerQ, 0), 10000);
+  }
+
 }

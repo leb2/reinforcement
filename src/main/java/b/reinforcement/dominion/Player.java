@@ -15,6 +15,7 @@ public class Player {
 
   private List<Card> hand = new ArrayList<>();
   private List<Card> deck = new ArrayList<>();
+  private Multiset<Card> deckCounts = HashMultiset.create();
 
   private DominionEnvironment environment;
 
@@ -41,6 +42,7 @@ public class Player {
     for (int i = 0; i < quantity; i++) {
       deck.add(card.duplicate());
     }
+    deckCounts.add(card);
   }
 
   public void drawNewHand() {
@@ -53,7 +55,7 @@ public class Player {
 
     for (int i = 0; i < amount; i++) {
       Card card = deck.get(random.nextInt(deck.size()));
-      hand.add(card.duplicate()); // TODO: duplicate not needed?
+      hand.add(card); // TODO: duplicate not needed?
     }
   }
 
@@ -73,12 +75,9 @@ public class Player {
   }
 
   public List<Double> deckVector(List<Card> cards) {
-    Multiset<Card> counts = HashMultiset.create();
-    counts.addAll(deck);
-
     List<Double> vector = new ArrayList<>();
     for (Card card : cards) {
-      vector.add((double) counts.count(card));
+      vector.add((double) deckCounts.count(card));
     }
     return vector;
   }
