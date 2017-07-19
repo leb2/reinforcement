@@ -1,4 +1,8 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.policy;
+
+import b.reinforcement.learner.valuefunction.ActionValueFunction;
+import b.reinforcement.learner.core.Action;
+import b.reinforcement.learner.core.Environment;
 
 import java.util.*;
 

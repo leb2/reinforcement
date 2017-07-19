@@ -4,6 +4,7 @@ import b.reinforcement.dominion.DominionEnvironment;
 import b.reinforcement.dominion.GameMode;
 import b.reinforcement.dominion.card.Card;
 import b.reinforcement.dominion.Player;
+import lombok.Builder;
 
 import java.util.List;
 
@@ -26,12 +27,18 @@ public class PlayCardAction extends DominionAction {
     // Treasure
     resourceVector.set(2, resourceVector.get(2) + target.getTreasure());
 
-    // Hand Size
-    resourceVector.set(3, resourceVector.get(3) + target.getDraws() - 1);
+    // Card Draws
+    resourceVector.set(3, resourceVector.get(3) + target.getDraws());
   }
 
   @Override // TODO: Add modifyDeckVector to cards for more complex actions
   public void modifyDeckVector(List<Double> deckVector, List<Card> cards) {}
+
+  @Override
+  public void modifyHandVector(List<Double> handVector, List<Card> actionCards) {
+    int index = actionCards.indexOf(target);
+    handVector.set(index, handVector.get(index) - 1);
+  }
 
   @Override
   public String toString() {

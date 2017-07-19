@@ -1,11 +1,13 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.valuefunction;
 
+import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.core.StateAction;
+import b.reinforcement.learner.valuefunction.ActionValueFunction;
 import ml.misc.WindowData;
 import ml.ml.ExecutionModel;
 import ml.ml.Model;
 import ml.ml.NeuralNetwork;
 import ml.optimizers.AdamOptimizer;
-import ml.optimizers.GDOptimizer;
 import ml.optimizers.MeanSquaredError;
 
 import java.util.List;
@@ -21,7 +23,7 @@ public class NNActionValueFunction implements ActionValueFunction {
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
     model = new NeuralNetwork(
-            environment.getVectorSize(), 30, 1);
+            environment.getVectorSize(), 15, 1);
     model.initNormalWeights();
     this.environment = environment;
     network = model.prepare();
@@ -51,7 +53,6 @@ public class NNActionValueFunction implements ActionValueFunction {
             new AdamOptimizer(learningRate));
   }
 
-  // TODO: Improve bad runtime
   protected static double[] doubleListToArr(List<Double> list) {
     double[] arr = new double[list.size()];
     for (int i = 0; i < list.size(); i++) {

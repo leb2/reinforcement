@@ -4,7 +4,7 @@ import b.reinforcement.dominion.DominionEnvironment;
 import b.reinforcement.dominion.GameMode;
 import b.reinforcement.dominion.card.Card;
 import b.reinforcement.dominion.Player;
-import b.reinforcement.learner.Action;
+import b.reinforcement.learner.core.Action;
 
 import java.util.List;
 
@@ -62,6 +62,8 @@ public abstract class DominionAction implements Action {
   public void modifyPilesVector(List<Double> pilesVector, List<Card> cards) {}
 
   public void modifyModeVector(List<Double> modesVector, List<GameMode> modes) {}
+
+  public void modifyHandVector(List<Double> handVector, List<Card> actionCards) {}
 
   @Override
   public List<Double> toVector() {

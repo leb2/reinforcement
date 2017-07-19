@@ -6,7 +6,11 @@ import b.reinforcement.dominion.action.EndPhaseAction;
 import b.reinforcement.dominion.action.PlayCardAction;
 import b.reinforcement.dominion.card.Card;
 import b.reinforcement.dominion.card.CardType;
-import b.reinforcement.learner.*;
+import b.reinforcement.learner.core.Action;
+import b.reinforcement.learner.core.DefaultStateAction;
+import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.core.StateAction;
+import b.reinforcement.learner.policy.Policy;
 import com.google.common.collect.*;
 import java.util.*;
 
@@ -141,12 +145,16 @@ public class DominionEnvironment implements Environment {
     }
     action.modifyPilesVector(pilesVector, cards);
 
+    // Hand Vector
+    List<Double> handVector = player.handVector(actionCards);
+    action.modifyHandVector(handVector, actionCards);
+
     // Resource vector
     List<Double> resourcesVector = new ArrayList<>();
     resourcesVector.add((double) player.getActions());
     resourcesVector.add((double) player.getBuys());
     resourcesVector.add((double) player.getTreasure());
-    resourcesVector.add((double) player.getHandSize());
+    resourcesVector.add(0.0); // Mystery cards in hand
     action.modifyResourceVector(resourcesVector, player);
 
     // Mode vector
@@ -165,7 +173,8 @@ public class DominionEnvironment implements Environment {
     // Provinces remaining
     Card province = cardNameMap.get("province");
     finalVector.add(pilesVector.get(cards.indexOf(province)));
-    finalVector.addAll(player.handVector(actionCards));
+
+    finalVector.addAll(handVector);
 
     // Resources
     finalVector.add(resourcesVector.get(0)); // Actions

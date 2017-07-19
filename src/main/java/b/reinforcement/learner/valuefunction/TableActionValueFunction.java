@@ -1,4 +1,8 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.valuefunction;
+
+import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.core.StateAction;
+import b.reinforcement.learner.valuefunction.ActionValueFunction;
 
 import java.util.HashMap;
 import java.util.Map;

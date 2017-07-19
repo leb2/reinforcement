@@ -1,20 +1,25 @@
 package b.reinforcement;
 
-import b.reinforcement.dominion.DominionAgent;
-import b.reinforcement.learner.HumanPolicy;
+import b.reinforcement.tictactoe.TicTacToeAgent;
 
 public class App {
   public static void main( String[] args ) {
 
-    DominionAgent agent = new DominionAgent();
-    agent.play("last.mw");
-    agent.setLoadFile("last.mw");
-    agent.setLearningRate(0.000001);
-    agent.setEpsilon(0.2);
-    agent.setTestAmount(1000);
-    agent.setTestInterval(500);
-    agent.train(1000000);
 
-    agent.play(new HumanPolicy(), agent.getGreedyPolicy(), 10);
+    TicTacToeAgent agent = new TicTacToeAgent();
+    agent.train(500000);
+    agent.playHuman();
+
+
+
+//    DominionAgent agent = new DominionAgent();
+//    agent.play("lastgood.mw");
+//    agent.setLoadFile("lastgood.mw");
+//    agent.setLearningRate(0.001);
+//    agent.setEpsilon(8);
+//    agent.setTestAmount(1000);
+//    agent.setTestInterval(500);
+//    agent.train(1000000);
+//    agent.play(new HumanPolicy(), agent.getGreedyPolicy(), 10);
   }
 }

@@ -1,4 +1,6 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.valuefunction;
+
+import b.reinforcement.learner.core.StateAction;
 
 public interface ActionValueFunction {
 

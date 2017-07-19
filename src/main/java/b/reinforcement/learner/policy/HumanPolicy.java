@@ -1,4 +1,8 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.policy;
+
+import b.reinforcement.learner.core.Action;
+import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.policy.Policy;
 
 import java.util.List;
 import java.util.Scanner;

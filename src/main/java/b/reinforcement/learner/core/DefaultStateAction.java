@@ -1,4 +1,4 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.core;
 
 import java.util.List;
 
@@ -12,16 +12,6 @@ public class DefaultStateAction implements StateAction {
   @Override
   public List<Double> toVector() {
     return vector;
-  }
-
-  @Override
-  public List<Double> stateVector() {
-    return null; // TODO: Remove
-  }
-
-  @Override
-  public Action getAction() {
-    return null; // TODO: Remove
   }
 
   @Override

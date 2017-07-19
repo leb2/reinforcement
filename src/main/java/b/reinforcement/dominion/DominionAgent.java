@@ -1,6 +1,13 @@
 package b.reinforcement.dominion;
 
-import b.reinforcement.learner.*;
+import b.reinforcement.learner.core.Action;
+import b.reinforcement.learner.core.QLearnerAgent;
+import b.reinforcement.learner.policy.EpsilonGreedyPolicy;
+import b.reinforcement.learner.policy.HumanPolicy;
+import b.reinforcement.learner.policy.Policy;
+import b.reinforcement.learner.valuefunction.ActionValueFunction;
+import b.reinforcement.learner.valuefunction.NNActionValueFunction;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;

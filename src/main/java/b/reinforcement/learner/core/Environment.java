@@ -1,4 +1,4 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.core;
 
 import java.util.List;
 

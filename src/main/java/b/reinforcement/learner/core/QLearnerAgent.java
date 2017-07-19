@@ -1,4 +1,14 @@
-package b.reinforcement.learner;
+package b.reinforcement.learner.core;
+
+import b.reinforcement.learner.policy.EpsilonGreedyPolicy;
+import b.reinforcement.learner.policy.Policy;
+import b.reinforcement.learner.policy.SoftmaxPolicy;
+import b.reinforcement.learner.valuefunction.ActionValueFunction;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.Writer;
 
 public class QLearnerAgent {
 
@@ -7,6 +17,8 @@ public class QLearnerAgent {
   protected Policy policy;
   protected Policy trainedPolicy;
   private double epsilon = 0.2;
+  private int index = 0;
+  private double sumSquaredErrors = 0;
 
   public QLearnerAgent(ActionValueFunction q) {
     setActionValueFunction(q);
@@ -18,6 +30,7 @@ public class QLearnerAgent {
 
   public void setEpsilon(double epsilon) {
     this.epsilon = epsilon;
+    ((SoftmaxPolicy) policy).setTemperature(epsilon);
   }
 
   /**
@@ -52,11 +65,27 @@ public class QLearnerAgent {
     if (Math.abs(backupValue) > 0) {
       q.backup(stateAction, backupValue);
     }
+    index += 1;
+    sumSquaredErrors += backupValue * backupValue;
+    if ((index + 1) % 50000 == 0) {
+      double rmse = Math.sqrt(sumSquaredErrors / 50000);
+      try {
+        Writer output = new BufferedWriter(new FileWriter("rmse.csv", true));
+        output.append(rmse + "\n");
+        output.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
+      System.out.println("RMSE: " + rmse);
+      System.out.println("Temperature: " + ((SoftmaxPolicy) policy).getTemperature());
+      sumSquaredErrors = 0;
+      ((SoftmaxPolicy) policy).incrementTemperature(0.02);
+    }
   }
 
   public void setActionValueFunction(ActionValueFunction q) {
     this.q = q;
-    policy = new EpsilonGreedyPolicy(q, epsilon);
+    policy = new SoftmaxPolicy(q, epsilon);//new EpsilonGreedyPolicy(q, epsilon);
     trainedPolicy = new EpsilonGreedyPolicy(q, 0);
   }
 

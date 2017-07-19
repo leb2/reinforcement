@@ -2,9 +2,9 @@ package b.reinforcement.dominion;
 
 import b.reinforcement.dominion.action.BuyAction;
 import b.reinforcement.dominion.action.EndPhaseAction;
-import b.reinforcement.learner.Environment;
-import b.reinforcement.learner.Policy;
-import b.reinforcement.learner.Action;
+import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.policy.Policy;
+import b.reinforcement.learner.core.Action;
 
 import java.util.List;
 

@@ -47,8 +47,7 @@ public class Player {
   }
 
   public void drawNewHand() {
-    hand.clear();
-    handCounts.clear();
+    clearHand();
     draw(5);
   }
 
@@ -91,6 +90,12 @@ public class Player {
     }
     return vector;
   }
+
+  public void clearHand() {
+    hand.clear();
+    handCounts.clear();
+  }
+
 
   public void obtainCard(Card card) {
     obtainCard(card, 1);
