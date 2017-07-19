@@ -7,9 +7,7 @@ import b.reinforcement.dominion.action.PlayCardAction;
 import b.reinforcement.dominion.card.Card;
 import b.reinforcement.dominion.card.CardType;
 import b.reinforcement.learner.core.Action;
-import b.reinforcement.learner.core.DefaultStateAction;
 import b.reinforcement.learner.core.Environment;
-import b.reinforcement.learner.core.StateAction;
 import b.reinforcement.learner.policy.Policy;
 import com.google.common.collect.*;
 import java.util.*;
@@ -130,7 +128,7 @@ public class DominionEnvironment implements Environment {
   }
 
   @Override
-  public StateAction getStateAction(Action a) {
+  public List<Double> getStateAction(Action a) {
     DominionAction action = (DominionAction) a;
     Player player = players.get(0); //currentPlayer();
 
@@ -194,7 +192,7 @@ public class DominionEnvironment implements Environment {
     }
     finalVector.add((double) turn / players.size() + 1);
 
-    return new DefaultStateAction(finalVector);
+    return finalVector;
   }
 
   @Override
@@ -228,7 +226,7 @@ public class DominionEnvironment implements Environment {
 
   @Override
   public int getVectorSize() {
-    return getStateAction(getActions().get(0)).toVector().size();
+    return getStateAction(getActions().get(0)).size();
   }
 
   @Override

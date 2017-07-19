@@ -100,7 +100,7 @@ public class DominionAgent extends QLearnerAgent {
         Action action = policy1.chooseAction(environment);
 
         if (debug) {
-          System.out.println(environment.getStateAction(action).toVector());
+          System.out.println(environment.getStateAction(action));
         }
 
         double reward = environment.performAction(action);

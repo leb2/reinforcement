@@ -3,7 +3,6 @@ package b.reinforcement.learner.policy;
 import b.reinforcement.learner.valuefunction.ActionValueFunction;
 import b.reinforcement.learner.core.Action;
 import b.reinforcement.learner.core.Environment;
-import b.reinforcement.learner.core.StateAction;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,7 +39,7 @@ public class SoftmaxPolicy implements Policy {
     List<Action> actions = environment.getActions();
     List<Double> values = new ArrayList<>();
     for (Action action : actions) {
-      StateAction stateAction = environment.getStateAction(action);
+      List<Double> stateAction = environment.getStateAction(action);
       values.add(q.getValue(stateAction));
     }
 

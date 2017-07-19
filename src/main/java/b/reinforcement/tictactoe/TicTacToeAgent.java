@@ -1,11 +1,11 @@
 package b.reinforcement.tictactoe;
 import b.reinforcement.learner.core.QLearnerAgent;
-import b.reinforcement.learner.core.StateAction;
 import b.reinforcement.learner.policy.EpsilonGreedyPolicy;
 import b.reinforcement.learner.policy.Policy;
 import b.reinforcement.learner.policy.SoftmaxPolicy;
 import b.reinforcement.learner.valuefunction.NNActionValueFunction;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class TicTacToeAgent extends QLearnerAgent {
@@ -93,7 +93,7 @@ public class TicTacToeAgent extends QLearnerAgent {
           int col = scanner.nextInt();
 
           TicTacToeAction action = new TicTacToeAction(row, col);
-          StateAction stateAction = environment.getStateAction(action);
+          List<Double> stateAction = environment.getStateAction(action);
           environment.performAction(action);
 
           System.out.println("Value of this state and your action:");

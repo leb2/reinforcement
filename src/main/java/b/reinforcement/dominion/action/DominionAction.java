@@ -8,7 +8,6 @@ import b.reinforcement.learner.core.Action;
 
 import java.util.List;
 
-// TODO: Make abstract class
 public abstract class DominionAction implements Action {
 
   // Mode of environment for which the action can act in.

@@ -9,13 +9,15 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.Writer;
+import java.util.List;
 
 public class QLearnerAgent {
 
   protected ActionValueFunction q;
   protected Environment environment;
   protected Policy policy;
-  protected Policy trainedPolicy;
+
+  private Policy trainedPolicy;
   private double epsilon = 0.2;
   private int index = 0;
   private double sumSquaredErrors = 0;
@@ -40,7 +42,7 @@ public class QLearnerAgent {
     while (!environment.inTerminalState()) {
 
       Action action = policy.chooseAction(environment);
-      StateAction stateAction = environment.getStateAction(action);
+      List<Double> stateAction = environment.getStateAction(action);
 
       double reward = environment.performAction(action);
 
@@ -50,7 +52,7 @@ public class QLearnerAgent {
   }
 
   public void backup(
-          StateAction stateAction,
+          List<Double> stateAction,
           double reward) {
 
     double backupValue;
@@ -100,5 +102,4 @@ public class QLearnerAgent {
   public Policy getPolicy() {
     return policy;
   }
-
 }

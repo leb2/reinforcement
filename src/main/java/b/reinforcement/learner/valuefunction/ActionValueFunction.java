@@ -1,10 +1,10 @@
 package b.reinforcement.learner.valuefunction;
 
-import b.reinforcement.learner.core.StateAction;
+import java.util.List;
 
 public interface ActionValueFunction {
 
-  double getValue(StateAction stateAction);
-  void backup(StateAction stateAction, double newValue);
+  double getValue(List<Double> stateAction);
+  void backup(List<Double> stateAction, double newValue);
   void setLearningRate(double learningRate);
 }

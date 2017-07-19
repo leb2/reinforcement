@@ -1,15 +1,14 @@
 package b.reinforcement.learner.valuefunction;
 
 import b.reinforcement.learner.core.Environment;
-import b.reinforcement.learner.core.StateAction;
-import b.reinforcement.learner.valuefunction.ActionValueFunction;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class TableActionValueFunction implements ActionValueFunction {
 
-  private Map<StateAction, Double> actionValueMap = new HashMap<>();
+  private Map<List<Double>, Double> actionValueMap = new HashMap<>();
   private double learningRate = 0.2;
 
   public TableActionValueFunction(Environment environment, double learningRate) {
@@ -21,12 +20,12 @@ public class TableActionValueFunction implements ActionValueFunction {
   }
 
   @Override
-  public double getValue(StateAction stateAction) {
+  public double getValue(List<Double> stateAction) {
     return actionValueMap.computeIfAbsent(stateAction, q -> 0.0);
   }
 
   @Override
-  public void backup(StateAction stateAction, double value) {
+  public void backup(List<Double> stateAction, double value) {
     actionValueMap.put(stateAction, getValue(stateAction) + learningRate * value);
   }
 }

@@ -3,7 +3,6 @@ package b.reinforcement.tictactoe;
 import b.reinforcement.learner.core.Action;
 import b.reinforcement.learner.core.Environment;
 import b.reinforcement.learner.policy.Policy;
-import b.reinforcement.learner.core.StateAction;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -35,7 +34,7 @@ public class TicTacToeEnvironment implements Environment {
   }
 
   @Override
-  public StateAction getStateAction(Action a) {
+  public List<Double> getStateAction(Action a) {
     TicTacToeAction action = (TicTacToeAction) a;
 
     List<Double> stateVector = new ArrayList<>();
@@ -53,7 +52,7 @@ public class TicTacToeEnvironment implements Environment {
       stateVector.set(i, turn * stateVector.get(i));
     }
 
-    return new TicTacToeStateAction(stateVector);
+    return stateVector;
   }
 
 
