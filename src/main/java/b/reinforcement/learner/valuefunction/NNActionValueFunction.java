@@ -1,6 +1,7 @@
 package b.reinforcement.learner.valuefunction;
 
 import b.reinforcement.learner.core.Environment;
+import b.reinforcement.learner.core.Util;
 import ml.misc.WindowData;
 import ml.ml.ExecutionModel;
 import ml.ml.Model;
@@ -8,7 +9,6 @@ import ml.ml.NeuralNetwork;
 import ml.optimizers.AdamOptimizer;
 import ml.optimizers.MeanSquaredError;
 
-import javax.swing.*;
 import java.util.List;
 
 public class NNActionValueFunction implements ActionValueFunction {
@@ -22,7 +22,7 @@ public class NNActionValueFunction implements ActionValueFunction {
 
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
-    model = new NeuralNetwork(environment.getVectorSize(), 15, 1);
+    model = new NeuralNetwork(environment.getVectorSize(), 20, 20, 1);
     model.initNormalWeights();
     this.environment = environment;
     network = model.prepare();
@@ -35,7 +35,7 @@ public class NNActionValueFunction implements ActionValueFunction {
 
   @Override
   public double getValue(List<Double> stateAction) {
-    return network.eval(doubleListToArr(stateAction))[0];
+    return network.eval(Util.doubleListToArr(stateAction))[0];
   }
 
   @Override
@@ -44,18 +44,10 @@ public class NNActionValueFunction implements ActionValueFunction {
 
     network.backprop(
             window.getWindow(
-            doubleListToArr(stateAction),
-            new double[]{value + newValue}),
+              Util.doubleListToArr(stateAction),
+              new double[]{value + newValue}),
             new MeanSquaredError(),
             new AdamOptimizer(learningRate));
-  }
-
-  private static double[] doubleListToArr(List<Double> list) {
-    double[] arr = new double[list.size()];
-    for (int i = 0; i < list.size(); i++) {
-      arr[i] = list.get(i);
-    }
-    return arr;
   }
 
   public String toString() {

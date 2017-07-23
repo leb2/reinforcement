@@ -15,7 +15,7 @@ public class TicTacToeAgent extends QLearnerAgent {
     super(new TicTacToeEnvironment());
     this.setActionValueFunction(new NNActionValueFunction(environment, 0.005));
     ticTacToeEnvironment = (TicTacToeEnvironment) environment;
-    ((SoftmaxPolicy) this.policy).setTemperature(0.01);
+    ((SoftmaxPolicy) this.policy).setTemperature(0.5);
   }
 
   public void train(int numIterations) {

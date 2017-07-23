@@ -157,6 +157,11 @@ public class TicTacToeEnvironment implements Environment {
   }
 
   @Override
+  public double immediateReward(Action action) {
+    return 0;
+  }
+
+  @Override
   public int getVectorSize() {
     return 9;
   }

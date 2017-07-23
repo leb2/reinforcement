@@ -9,4 +9,5 @@ public interface Environment {
   void resetState();
   List<Double> getStateAction(Action action);
   List<Action> getActions();
+  double immediateReward(Action action);
 }

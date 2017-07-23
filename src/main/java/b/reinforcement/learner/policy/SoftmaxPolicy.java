@@ -40,7 +40,7 @@ public class SoftmaxPolicy implements Policy {
     List<Double> values = new ArrayList<>();
     for (Action action : actions) {
       List<Double> stateAction = environment.getStateAction(action);
-      values.add(q.getValue(stateAction));
+      values.add(q.getValue(stateAction) + environment.immediateReward(action));
     }
 
     double sumExp = 0;

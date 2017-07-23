@@ -71,6 +71,16 @@ public class DominionEnvironment implements Environment {
   }
 
   @Override
+  public double immediateReward(Action a) {
+    DominionAction action = (DominionAction) a;
+    if (action.getMode() == GameMode.BUY && action.getTarget() != null) {
+      return action.getTarget().getPoints();
+    } else {
+      return 0;
+    }
+  }
+
+  @Override
   public double performAction(Action a) {
     DominionAction action = (DominionAction) a;
     Player player = currentPlayer();

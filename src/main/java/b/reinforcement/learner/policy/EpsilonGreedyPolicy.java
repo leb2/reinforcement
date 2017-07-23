@@ -21,6 +21,14 @@ public class EpsilonGreedyPolicy implements Policy {
     this.epsilon = epsilon;
   }
 
+  public void setEpsilon(double epsilon) {
+    this.epsilon = epsilon;
+  }
+
+  public double getEpsilon() {
+    return epsilon;
+  }
+
   public Action chooseAction(Environment environment) {
     List<Action> actions = environment.getActions();
     if (actions.size() == 0) {
@@ -33,7 +41,9 @@ public class EpsilonGreedyPolicy implements Policy {
 
     } else {
       Action maxAction = Collections.max(actions, Comparator.comparing(
-              action -> q.getValue(environment.getStateAction(action))));
+              action ->
+                      q.getValue(environment.getStateAction(action))
+                              + environment.immediateReward(action)));
 
       // TODO: debug
       double maxActionValue = q.getValue(environment.getStateAction(maxAction));
