@@ -1,6 +1,7 @@
 package b.reinforcement;
 
 import b.reinforcement.dominion.DominionAgent;
+import b.reinforcement.learner.policy.HumanPolicy;
 
 public class App {
   public static void main( String[] args ) {
@@ -11,14 +12,11 @@ public class App {
 //    agent.playHuman();
 
     DominionAgent agent = new DominionAgent();
-    agent.setLoadFile("last.mw");
     agent.setLearningRate(0.00001);
-    agent.setEpsilon(0.9);
-    agent.setEpsilonDecay(0.005);
-    agent.setTestAmount(1000);
-    agent.setTestInterval(500);
+    agent.setEpsilon(1);
+    agent.setEpsilonDecay(0.0002);
+    agent.setTestAmount(2000);
+    agent.setTestInterval(1000);
     agent.train(1000000);
-//    agent.play(new HumanPolicy(), agent.getGreedyPolicy(), 10);
-
   }
 }

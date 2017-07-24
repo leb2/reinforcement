@@ -18,11 +18,11 @@ public class NNActionValueFunction implements ActionValueFunction {
   protected Environment environment;
 
   private ExecutionModel network;
-  private WindowData window = new WindowData(10);
+  private WindowData window = new WindowData(30);
 
   public NNActionValueFunction(Environment environment, double learningRate) {
     this.learningRate = learningRate;
-    model = new NeuralNetwork(environment.getVectorSize(), 20, 20, 1);
+    model = new NeuralNetwork(environment.getVectorSize(), 12, 12, 1);
     model.initNormalWeights();
     this.environment = environment;
     network = model.prepare();

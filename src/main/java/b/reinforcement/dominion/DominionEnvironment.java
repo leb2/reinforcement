@@ -70,6 +70,35 @@ public class DominionEnvironment implements Environment {
     return players.get(0).totalPoints() - secondBest;
   }
 
+  private void handleActionPhase() {
+    if (gameMode != GameMode.ACTION) {
+      throw new IllegalStateException("Game mode must be action to handle actions");
+    }
+    List<Card> preferences = ImmutableList.of(
+            cardNameMap.get("village"),
+            cardNameMap.get("market"),
+            cardNameMap.get("smithy"),
+            cardNameMap.get("woodcutter"));
+
+    boolean foundCard = true;
+    while (foundCard) {
+      if (currentPlayer().getActions() <= 0) {
+        (new EndPhaseAction(GameMode.ACTION)).perform(this);
+        return;
+      }
+      foundCard = false;
+
+      for (Card preference : preferences) {
+        if (currentPlayer().getHand().indexOf(preference) != -1) {
+          preference.play(currentPlayer());
+          foundCard = true;
+          break;
+        }
+      }
+    }
+    (new EndPhaseAction(GameMode.ACTION)).perform(this);
+  }
+
   @Override
   public double immediateReward(Action a) {
     DominionAction action = (DominionAction) a;
@@ -88,12 +117,14 @@ public class DominionEnvironment implements Environment {
       throw new IllegalStateException("Player must be first player");
     }
     double oldPoints = player.totalPoints();
+    double oldWinMargin = this.winMargin();
     double turnPenalty = 0;
     playAction(action);
 
     if (gameMode == GameMode.TURN_FINISH) {
       turnPenalty = 0;
       incrementTurn();
+
       for (int i = 0; i < players.size() - 1; i++) {
         playTurn();
         if (inTerminalState()) {
@@ -102,7 +133,8 @@ public class DominionEnvironment implements Environment {
       }
     }
 
-    return player.totalPoints() - oldPoints - turnPenalty;
+    return winMargin() - oldWinMargin;
+//    return player.totalPoints() - oldPoints - turnPenalty;
   }
 
   private void playAction(DominionAction action) {
@@ -135,6 +167,7 @@ public class DominionEnvironment implements Environment {
   private void startTurn() {
     currentPlayer().setStartingResources();
     gameMode = GameMode.ACTION;
+    handleActionPhase();
   }
 
   @Override
@@ -182,18 +215,18 @@ public class DominionEnvironment implements Environment {
     Card province = cardNameMap.get("province");
     finalVector.add(pilesVector.get(cards.indexOf(province)));
 
-    finalVector.addAll(handVector);
+//    finalVector.addAll(handVector);
 
     // Resources
-    finalVector.add(resourcesVector.get(0)); // Actions
+//    finalVector.add(resourcesVector.get(0)); // Actions
     finalVector.add(resourcesVector.get(1)); // Buys
     finalVector.add(resourcesVector.get(2)); // Gold
-    finalVector.add(resourcesVector.get(3)); // Hand Size
+//    finalVector.add(resourcesVector.get(3)); // Hand Size
 
     // Phase
     finalVector.add(action.getTargetMode() == GameMode.TURN_FINISH ? 1.0 : 0.0);
-    finalVector.add(action.getTargetMode() == GameMode.ACTION ? 1.0 : 0.0);
-    finalVector.add(action.getTargetMode() == GameMode.BUY ? 1.0 : 0.0);
+//    finalVector.add(action.getTargetMode() == GameMode.ACTION ? 1.0 : 0.0);
+//    finalVector.add(action.getTargetMode() == GameMode.BUY ? 1.0 : 0.0);
 
     // Turn
     double turn = (double) this.turn;
@@ -215,13 +248,17 @@ public class DominionEnvironment implements Environment {
 
     actions.add(new EndPhaseAction(gameMode));
 
-    if (gameMode == GameMode.ACTION && player.getActions() > 0) {
-      for (Card card : player.getHand()) {
-        if (card.getType() == CardType.ACTION) {
-          actions.add(new PlayCardAction(card));
-        }
-      }
+    if (gameMode == GameMode.ACTION) {
+      throw new IllegalStateException("Action phase is no longer actionable");
     }
+//
+//    if (gameMode == GameMode.ACTION && player.getActions() > 0) {
+//      for (Card card : player.getHand()) {
+//        if (card.getType() == CardType.ACTION) {
+//          actions.add(new PlayCardAction(card));
+//        }
+//      }
+//    }
 
     if (gameMode == GameMode.BUY && player.getBuys() > 0) {
       for (Card card : cards) {

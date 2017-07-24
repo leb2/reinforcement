@@ -46,7 +46,7 @@ public class EpsilonGreedyPolicy implements Policy {
                               + environment.immediateReward(action)));
 
       // TODO: debug
-      double maxActionValue = q.getValue(environment.getStateAction(maxAction));
+      double maxActionValue = q.getValue(environment.getStateAction(maxAction)) + environment.immediateReward(maxAction);
       Map<Action, Double> valueMap = new HashMap<>();
       for (Action action : actions) {
         valueMap.put(action, q.getValue(environment.getStateAction(action)));
